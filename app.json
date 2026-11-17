@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Nosotros",
+    "slug": "app-pareja",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FCE4EA",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "package": "com.romanluna.nosotros"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

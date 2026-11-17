@@ -1,0 +1,12 @@
+{
+  "name": "exportar-sql",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "mysql": "node export-sql.js mysql",
+    "postgres": "node export-sql.js postgres"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.1"
+  }
+}

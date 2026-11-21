@@ -9,7 +9,7 @@
 ```bash
 cd "C:\Users\roman\Desktop\Claude Code Test\app-pareja"
 npm install        # solo la primera vez (tarda unos minutos)
-npx expo start     # muestra un código QR en la terminal
+npx expo start --go   # muestra un código QR para Expo Go
 ```
 
 1. Abre **Expo Go** y toca **Scan QR code**.
@@ -19,7 +19,8 @@ npx expo start     # muestra un código QR en la terminal
 ### Comandos útiles
 | Comando | Para qué |
 |---|---|
-| `npx expo start` | Arranca el servidor de desarrollo |
+| `npx expo start --go` | Arranca el servidor para Expo Go |
+| `npx expo start` | Arranca el servidor para el *development build* (APK de desarrollo) |
 | `npx expo start -c` | Igual, pero borra la caché (cuando un cambio no se refleja) |
 | `npx expo start --tunnel` | Conecta aunque estén en redes distintas o el firewall bloquee |
 | Sacudir el teléfono → **Reload** | Recarga la app |

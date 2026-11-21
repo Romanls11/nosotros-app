@@ -1,25 +1,18 @@
 rules_version = '2';
-
-// Reglas de seguridad: solo ustedes dos pueden ver y escribir sus preguntas.
-// Cópialas en: Consola de Firebase → Firestore Database → pestaña "Reglas" → Publicar.
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function signedIn() {
-      return request.auth != null;
-    }
+    function signedIn() { return request.auth != null; }
 
     function isMember(coupleId) {
       return signedIn() &&
         request.auth.uid in get(/databases/$(database)/documents/couples/$(coupleId)).data.members;
     }
 
-    // Perfil de cada usuario: solo el dueño lo lee/escribe
     match /users/{uid} {
       allow read, write: if signedIn() && request.auth.uid == uid;
     }
 
-    // Códigos de invitación: se pueden consultar por código exacto (no listar)
     match /invites/{code} {
       allow get: if signedIn();
       allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
@@ -27,30 +20,28 @@ service cloud.firestore {
 
     match /couples/{coupleId} {
       allow read: if signedIn() && request.auth.uid in resource.data.members;
-
-      // Crear la pareja: empieza solo con quien la crea
       allow create: if signedIn() && request.resource.data.members == [request.auth.uid];
-
-      // Unirse: solo si hay un integrante y te agregas tú mismo
       allow update: if signedIn()
         && resource.data.members.size() == 1
         && !(request.auth.uid in resource.data.members)
         && request.resource.data.members == resource.data.members.concat([request.auth.uid])
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'names']);
 
+      // Desvincularse: un integrante se quita a sí mismo (y borra su token)
+      allow update: if signedIn()
+        && request.auth.uid in resource.data.members
+        && request.resource.data.members == resource.data.members.removeAll([request.auth.uid])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'tokens'])
+        && request.resource.data.get('tokens', {}).diff(resource.data.get('tokens', {})).affectedKeys().hasOnly([request.auth.uid]);
+
       match /questions/{questionId} {
         allow read: if isMember(coupleId);
-
         allow create: if isMember(coupleId)
           && request.resource.data.authorId == request.auth.uid
           && request.resource.data.answers == {};
-
-        // Cada quien solo puede escribir SU respuesta
         allow update: if isMember(coupleId)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['answers'])
           && request.resource.data.answers.diff(resource.data.answers).affectedKeys().hasOnly([request.auth.uid]);
-
-        // Solo quien hizo la pregunta la puede borrar
         allow delete: if isMember(coupleId) && resource.data.authorId == request.auth.uid;
       }
     }

@@ -16,6 +16,9 @@ Hecha con **Expo (React Native)** y **Firebase** en su plan gratuito: sin servid
 - 🔒 **Sin spoilers:** la respuesta de tu pareja se ve hasta que respondes tú.
 - 🗂️ **Pestañas:** *Por responder*, *Esperando* y *Respondidas*.
 - ⚡ **Tiempo real:** los cambios aparecen al instante en los dos teléfonos.
+- 🔔 **Notificaciones push** cuando hay pregunta nueva o respuesta.
+- 💔 **Desvincular pareja** y volver a vincularse desde Ajustes.
+- ✨ **Interfaz animada:** degradados, revelado de respuestas con corazones y vibración sutil.
 - 📤 **Exportar a SQL** desde la app (MySQL) o con un script en la computadora (MySQL o PostgreSQL).
 
 ## 🧱 Tecnologías
@@ -77,6 +80,8 @@ Luego abre **Expo Go** en tu teléfono Android y escanea el código QR.
 | [04 · Exportar a SQL](docs/04-exportar-sql.md) | Botón en la app y script de respaldo |
 | [05 · Notificaciones (plan)](docs/05-notificaciones.md) | Cómo se van a implementar los avisos push |
 | [06 · Generar el APK](docs/06-apk.md) | Instalar la app sin depender de la computadora |
+| [07 · Actualizaciones](docs/07-actualizaciones.md) | Publicar cambios sin recompilar (EAS Update) |
+| [08 · Compilar local](docs/08-compilar-local.md) | Generar el APK en tu PC sin esperar la fila |
 | [CHANGELOG](CHANGELOG.md) | Bitácora de cambios |
 
 ## 🔐 Nota sobre seguridad

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "52124007561",
+    "project_id": "pareja-app-c855e",
+    "storage_bucket": "pareja-app-c855e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52124007561:android:854151bd9fd7b9e75a1a58",
+        "android_client_info": {
+          "package_name": "com.romanluna.nosotros"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "52124007561-kkqa7lvo20vo5ih8eeb34bir5idoiv5k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQpn6nyjswo2OrWz8GmG9J0M_K_2511K8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "52124007561-kkqa7lvo20vo5ih8eeb34bir5idoiv5k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

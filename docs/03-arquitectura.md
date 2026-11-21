@@ -73,13 +73,19 @@ couples/{coupleId}/questions/{questionId}
 2. Hace `arrayUnion(yo)` en `couples/{id}.members`. Las reglas solo lo permiten si había **exactamente 1** integrante, así que un código ya usado no sirve.
 3. Guarda `coupleId` en `users/{yo}`.
 
+**Desvincularse** (`leaveCouple`), en un *batch* atómico:
+1. Quita tu uid de `members` (`arrayRemove`) y borra tu token de `tokens`.
+2. Pone `coupleId: null` en `users/{yo}`, y la app regresa a la pantalla de vincular.
+
+Las preguntas **se quedan** en la pareja, así que tu pareja las conserva. Como la pareja vuelve a tener 1 integrante, cualquiera puede unirse otra vez con el mismo código, incluido tú.
+
 ## Reglas de seguridad explicadas
 
 | Colección | Leer | Crear | Modificar | Borrar |
 |---|---|---|---|---|
 | `users/{uid}` | solo el dueño | solo el dueño | solo el dueño | solo el dueño |
 | `invites/{código}` | cualquier usuario con sesión, pero solo por código exacto (`get`, no `list`) | quien la crea (`createdBy` = yo) | ❌ | ❌ |
-| `couples/{id}` | integrantes | solo con `members == [yo]` | solo para unirse: 1 integrante → agregarme a mí, sin tocar otros campos | ❌ |
+| `couples/{id}` | integrantes | solo con `members == [yo]` | **unirse:** 1 integrante → agregarme a mí · **token:** solo el mío · **salir:** quitarme a mí y mi token | ❌ |
 | `questions/{id}` | integrantes | integrantes, con `authorId` = yo y `answers` vacío | integrantes, **solo su propia respuesta** | solo el autor |
 
 La regla clave de las respuestas:

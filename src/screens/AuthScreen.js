@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
-  ActivityIndicator,
+  Animated,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -10,8 +10,10 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, ui } from '../theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, gradients, shadow, ui } from '../theme';
 import { friendlyError, login, register } from '../services';
+import { FadeIn, FloatingHearts, GradientButton, PasswordInput, Pulse, tap } from '../components/ui';
 
 export default function AuthScreen() {
   const [mode, setMode] = useState('login'); // 'login' | 'register'
@@ -20,83 +22,128 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const shake = useRef(new Animated.Value(0)).current;
 
   const isRegister = mode === 'register';
 
+  function showError(msg) {
+    setError(msg);
+    tap('warning');
+    Animated.sequence(
+      [10, -10, 7, -7, 0].map((x) => Animated.timing(shake, { toValue: x, duration: 60, useNativeDriver: true }))
+    ).start();
+  }
+
   async function submit() {
     setError('');
-    if (isRegister && !name.trim()) return setError('Escribe tu nombre.');
-    if (!email.trim() || !password) return setError('Escribe tu correo y contraseña.');
+    if (isRegister && !name.trim()) return showError('Escribe tu nombre.');
+    if (!email.trim() || !password) return showError('Escribe tu correo y contraseña.');
     setLoading(true);
     try {
       if (isRegister) await register(name, email, password);
       else await login(email, password);
+      tap('success');
     } catch (e) {
-      setError(friendlyError(e));
+      showError(friendlyError(e));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView contentContainerStyle={{ padding: 24, flexGrow: 1, justifyContent: 'center' }}>
-          <Text style={{ fontSize: 56, textAlign: 'center' }}>💞</Text>
-          <Text style={[ui.title, { textAlign: 'center', marginTop: 8 }]}>Nosotros</Text>
-          <Text style={[ui.subtitle, { textAlign: 'center' }]}>
-            Pregúntense cosas, respondan cuando quieran y conózcanse mejor.
-          </Text>
-
-          <View style={{ marginTop: 28 }}>
-            {isRegister && (
-              <TextInput
-                style={ui.input}
-                placeholder="Tu nombre"
-                placeholderTextColor={colors.muted}
-                value={name}
-                onChangeText={setName}
-              />
-            )}
-            <TextInput
-              style={ui.input}
-              placeholder="Correo"
-              placeholderTextColor={colors.muted}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-            />
-            <TextInput
-              style={ui.input}
-              placeholder="Contraseña (mín. 6 caracteres)"
-              placeholderTextColor={colors.muted}
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-
-            {!!error && <Text style={ui.error}>{error}</Text>}
-
-            <Pressable style={ui.button} onPress={submit} disabled={loading}>
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={ui.buttonText}>{isRegister ? 'Crear cuenta' : 'Entrar'}</Text>
-              )}
-            </Pressable>
-
-            <Pressable onPress={() => { setError(''); setMode(isRegister ? 'login' : 'register'); }}>
-              <Text style={ui.link}>
-                {isRegister ? '¿Ya tienes cuenta? Inicia sesión' : '¿Eres nuevo(a)? Crea tu cuenta'}
+    <LinearGradient colors={gradients.soft} style={{ flex: 1 }}>
+      <FloatingHearts />
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <ScrollView
+            contentContainerStyle={{ padding: 24, flexGrow: 1, justifyContent: 'center' }}
+            keyboardShouldPersistTaps="handled"
+          >
+            <FadeIn>
+              <Pulse style={{ alignSelf: 'center' }}>
+                <Text style={{ fontSize: 64, textAlign: 'center' }}>💞</Text>
+              </Pulse>
+              <Text style={[ui.title, { textAlign: 'center', marginTop: 8, fontSize: 34 }]}>Nosotros</Text>
+              <Text style={[ui.subtitle, { textAlign: 'center' }]}>
+                Pregúntense cosas, respondan cuando quieran y conózcanse mejor.
               </Text>
-            </Pressable>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+            </FadeIn>
+
+            <FadeIn delay={150}>
+              <Animated.View
+                style={[
+                  {
+                    marginTop: 28,
+                    backgroundColor: 'rgba(255,255,255,0.92)',
+                    borderRadius: 24,
+                    padding: 20,
+                    transform: [{ translateX: shake }],
+                  },
+                  shadow,
+                ]}
+              >
+                {/* Selector Entrar / Crear cuenta */}
+                <View style={{ flexDirection: 'row', backgroundColor: colors.primarySoft, borderRadius: 14, padding: 4 }}>
+                  {[
+                    { k: 'login', t: 'Entrar' },
+                    { k: 'register', t: 'Crear cuenta' },
+                  ].map((o) => (
+                    <Pressable
+                      key={o.k}
+                      onPress={() => {
+                        tap('light');
+                        setError('');
+                        setMode(o.k);
+                      }}
+                      style={{
+                        flex: 1,
+                        paddingVertical: 10,
+                        borderRadius: 11,
+                        alignItems: 'center',
+                        backgroundColor: mode === o.k ? '#fff' : 'transparent',
+                      }}
+                    >
+                      <Text style={{ fontWeight: '800', color: mode === o.k ? colors.primary : colors.muted }}>{o.t}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+
+                {isRegister && (
+                  <FadeIn from={8} duration={260}>
+                    <TextInput
+                      style={ui.input}
+                      placeholder="Tu nombre"
+                      placeholderTextColor={colors.muted}
+                      value={name}
+                      onChangeText={setName}
+                    />
+                  </FadeIn>
+                )}
+                <TextInput
+                  style={ui.input}
+                  placeholder="Correo"
+                  placeholderTextColor={colors.muted}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="email-address"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+                <PasswordInput
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Contraseña (mín. 6 caracteres)"
+                  onSubmitEditing={submit}
+                />
+
+                {!!error && <Text style={ui.error}>{error}</Text>}
+
+                <GradientButton title={isRegister ? 'Crear cuenta' : 'Entrar'} onPress={submit} loading={loading} />
+              </Animated.View>
+            </FadeIn>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }

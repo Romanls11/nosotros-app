@@ -6,7 +6,9 @@ import {
 } from 'firebase/auth';
 import {
   addDoc,
+  arrayRemove,
   arrayUnion,
+  deleteField,
   collection,
   deleteDoc,
   doc,
@@ -67,8 +69,7 @@ export async function joinCouple(user, name, rawCode) {
   const code = rawCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
   const invite = await getDoc(doc(db, 'invites', code));
   if (!invite.exists()) throw new Error('Ese código no existe. Revísalo con tu pareja.');
-  const { coupleId, createdBy } = invite.data();
-  if (createdBy === user.uid) throw new Error('Ese es tu propio código; compártelo con tu pareja.');
+  const { coupleId } = invite.data();
 
   try {
     await updateDoc(doc(db, 'couples', coupleId), {
@@ -79,6 +80,20 @@ export async function joinCouple(user, name, rawCode) {
     throw new Error('Este código ya fue usado por otra persona.');
   }
   await setDoc(doc(db, 'users', user.uid), { name, coupleId }, { merge: true });
+}
+
+/**
+ * Salir de la pareja. Las preguntas se quedan con la pareja (tu pareja las conserva).
+ * Si luego quieres volver, puedes unirte otra vez con el mismo código.
+ */
+export async function leaveCouple(uid, coupleId) {
+  const batch = writeBatch(db);
+  batch.update(doc(db, 'couples', coupleId), {
+    members: arrayRemove(uid),
+    [`tokens.${uid}`]: deleteField(),
+  });
+  batch.set(doc(db, 'users', uid), { coupleId: null }, { merge: true });
+  await batch.commit();
 }
 
 // ---------- Preguntas ----------

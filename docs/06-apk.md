@@ -9,16 +9,12 @@ Se compila en la nube con **EAS Build**, que tiene plan gratuito.
 ```bash
 npm install -g eas-cli     # instalar la herramienta
 eas login                  # cuenta gratuita de expo.dev
-eas build:configure        # crea eas.json
+eas init                   # vincula el proyecto (agrega el projectId)
 ```
 
-En `eas.json`, dentro del perfil `preview`, agrega:
-```json
-"preview": {
-  "distribution": "internal",
-  "android": { "buildType": "apk" }
-}
-```
+`eas.json` ya viene configurado en el repositorio, con los perfiles `development` y `preview`, y los dos generan APK.
+
+Antes de compilar, `google-services.json` tiene que estar en la raíz del proyecto (ver [05](05-notificaciones.md)).
 
 Compila:
 ```bash

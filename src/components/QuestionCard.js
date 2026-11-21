@@ -1,19 +1,20 @@
-import { Pressable, Text, View } from 'react-native';
-import { colors } from '../theme';
+import { Text, View } from 'react-native';
+import { colors, shadow } from '../theme';
+import { FadeIn, ScalePressable } from './ui';
 
 function Chip({ label, ok }) {
   return (
     <View
       style={{
         paddingHorizontal: 10,
-        paddingVertical: 4,
+        paddingVertical: 5,
         borderRadius: 999,
         marginRight: 6,
         backgroundColor: ok ? colors.okSoft : colors.waitSoft,
       }}
     >
       <Text style={{ fontSize: 12, fontWeight: '700', color: ok ? colors.ok : colors.wait }}>
-        {ok ? '✓ ' : '… '}
+        {ok ? '✓ ' : '⏳ '}
         {label}
       </Text>
     </View>
@@ -25,35 +26,47 @@ export function formatDate(ts) {
   return ts.toDate().toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-export default function QuestionCard({ question, uid, partnerId, names, onPress }) {
+export default function QuestionCard({ question, uid, partnerId, names, onPress, index = 0 }) {
   const mine = !!question.answers?.[uid];
   const theirs = partnerId ? !!question.answers?.[partnerId] : false;
   const fromMe = question.authorId === uid;
+  const both = mine && theirs;
+  const accent = both ? colors.ok : !mine ? colors.primary : colors.wait;
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => ({
-        backgroundColor: colors.card,
-        borderRadius: 18,
-        padding: 18,
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: colors.border,
-        opacity: pressed ? 0.85 : 1,
-      })}
-    >
-      <Text style={{ fontSize: 12, color: colors.muted, fontWeight: '600' }}>
-        {fromMe ? 'Tú preguntaste' : `Pregunta de ${names[question.authorId] || 'tu pareja'}`} ·{' '}
-        {formatDate(question.createdAt)}
-      </Text>
-      <Text style={{ fontSize: 17, color: colors.text, fontWeight: '600', marginTop: 8, lineHeight: 24 }}>
-        {question.text}
-      </Text>
-      <View style={{ flexDirection: 'row', marginTop: 12 }}>
-        <Chip label="Tú" ok={mine} />
-        {partnerId && <Chip label={names[partnerId] || 'Pareja'} ok={theirs} />}
-      </View>
-    </Pressable>
+    <FadeIn delay={Math.min(index, 8) * 60}>
+      <ScalePressable
+        onPress={onPress}
+        scaleTo={0.97}
+        style={[
+          {
+            backgroundColor: colors.card,
+            borderRadius: 20,
+            padding: 18,
+            paddingLeft: 22,
+            marginBottom: 14,
+            overflow: 'hidden',
+          },
+          shadow,
+        ]}
+      >
+        {/* Barra de color según el estado */}
+        <View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 6, backgroundColor: accent }} />
+
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 12, color: colors.muted, fontWeight: '600', flex: 1 }}>
+            {fromMe ? '💬 Tú preguntaste' : `💌 ${names[question.authorId] || 'Tu pareja'} preguntó`} · {formatDate(question.createdAt)}
+          </Text>
+          {both && <Text style={{ fontSize: 16 }}>💞</Text>}
+        </View>
+        <Text style={{ fontSize: 17, color: colors.text, fontWeight: '700', marginTop: 8, lineHeight: 24 }}>
+          {question.text}
+        </Text>
+        <View style={{ flexDirection: 'row', marginTop: 12 }}>
+          <Chip label="Tú" ok={mine} />
+          {partnerId && <Chip label={names[partnerId] || 'Pareja'} ok={theirs} />}
+        </View>
+      </ScalePressable>
+    </FadeIn>
   );
 }

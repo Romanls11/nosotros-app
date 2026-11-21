@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, ui } from '../theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, gradients, shadow, ui } from '../theme';
 import { createCouple, friendlyError, joinCouple, logout } from '../services';
+import { FadeIn, FloatingHearts, GradientButton, ScalePressable, tap } from '../components/ui';
 
 // Pantalla para vincularse: uno crea la pareja (y obtiene un código),
 // el otro escribe ese código para unirse.
@@ -16,8 +18,10 @@ export default function PairScreen({ user, name }) {
     setLoading('create');
     try {
       await createCouple(user, name);
+      tap('success');
     } catch (e) {
       setError(friendlyError(e));
+      tap('warning');
     } finally {
       setLoading(null);
     }
@@ -25,64 +29,72 @@ export default function PairScreen({ user, name }) {
 
   async function onJoin() {
     setError('');
-    if (code.trim().length < 6) return setError('El código tiene 6 caracteres.');
+    if (code.trim().length < 6) {
+      tap('warning');
+      return setError('El código tiene 6 caracteres.');
+    }
     setLoading('join');
     try {
       await joinCouple(user, name, code);
+      tap('success');
     } catch (e) {
       setError(friendlyError(e));
+      tap('warning');
     } finally {
       setLoading(null);
     }
   }
 
+  const card = [{ backgroundColor: '#fff', borderRadius: 22, padding: 20 }, shadow];
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
-      <View style={{ padding: 24, flex: 1, justifyContent: 'center' }}>
-        <Text style={ui.title}>Hola, {name} 👋</Text>
-        <Text style={ui.subtitle}>
-          Para empezar, conecta tu cuenta con la de tu pareja. Solo uno de los dos crea la pareja; el
-          otro se une con el código.
-        </Text>
+    <LinearGradient colors={gradients.soft} style={{ flex: 1 }}>
+      <FloatingHearts count={5} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ padding: 24, flex: 1, justifyContent: 'center' }}>
+          <FadeIn>
+            <Text style={ui.title}>Hola, {name} 👋</Text>
+            <Text style={ui.subtitle}>
+              Conecta tu cuenta con la de tu pareja. Uno crea la pareja y el otro se une con el código.
+            </Text>
+          </FadeIn>
 
-        <View style={{ marginTop: 28, backgroundColor: colors.card, borderRadius: 18, padding: 18 }}>
-          <Text style={{ fontWeight: '700', fontSize: 16, color: colors.text }}>1. Soy el primero</Text>
-          <Text style={[ui.subtitle, { marginTop: 4 }]}>Crea la pareja y comparte el código.</Text>
-          <Pressable style={ui.button} onPress={onCreate} disabled={!!loading}>
-            {loading === 'create' ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={ui.buttonText}>Crear pareja</Text>
-            )}
+          <FadeIn delay={120} style={{ marginTop: 26 }}>
+            <View style={card}>
+              <Text style={{ fontSize: 28 }}>✨</Text>
+              <Text style={{ fontWeight: '800', fontSize: 17, color: colors.text, marginTop: 6 }}>Soy el primero</Text>
+              <Text style={[ui.subtitle, { marginTop: 4 }]}>Crea la pareja y comparte el código.</Text>
+              <GradientButton title="Crear pareja" onPress={onCreate} loading={loading === 'create'} disabled={!!loading} />
+            </View>
+          </FadeIn>
+
+          <FadeIn delay={240} style={{ marginTop: 16 }}>
+            <View style={card}>
+              <Text style={{ fontSize: 28 }}>🔑</Text>
+              <Text style={{ fontWeight: '800', fontSize: 17, color: colors.text, marginTop: 6 }}>Ya tengo un código</Text>
+              <TextInput
+                style={[ui.input, { letterSpacing: 6, fontWeight: '800', fontSize: 22, textAlign: 'center' }]}
+                placeholder="ABC123"
+                placeholderTextColor={colors.border}
+                autoCapitalize="characters"
+                autoCorrect={false}
+                maxLength={6}
+                value={code}
+                onChangeText={(t) => setCode(t.toUpperCase())}
+              />
+              <ScalePressable style={ui.ghostButton} onPress={onJoin} disabled={!!loading}>
+                <Text style={ui.ghostButtonText}>{loading === 'join' ? 'Uniendo…' : 'Unirme'}</Text>
+              </ScalePressable>
+            </View>
+          </FadeIn>
+
+          {!!error && <Text style={ui.error}>{error}</Text>}
+
+          <Pressable onPress={logout}>
+            <Text style={[ui.link, { color: colors.muted }]}>Cerrar sesión</Text>
           </Pressable>
         </View>
-
-        <View style={{ marginTop: 16, backgroundColor: colors.card, borderRadius: 18, padding: 18 }}>
-          <Text style={{ fontWeight: '700', fontSize: 16, color: colors.text }}>2. Ya tengo un código</Text>
-          <TextInput
-            style={[ui.input, { letterSpacing: 4, fontWeight: '700', textAlign: 'center' }]}
-            placeholder="ABC123"
-            placeholderTextColor={colors.muted}
-            autoCapitalize="characters"
-            maxLength={6}
-            value={code}
-            onChangeText={setCode}
-          />
-          <Pressable style={ui.ghostButton} onPress={onJoin} disabled={!!loading}>
-            {loading === 'join' ? (
-              <ActivityIndicator color={colors.primary} />
-            ) : (
-              <Text style={ui.ghostButtonText}>Unirme</Text>
-            )}
-          </Pressable>
-        </View>
-
-        {!!error && <Text style={ui.error}>{error}</Text>}
-
-        <Pressable onPress={logout}>
-          <Text style={[ui.link, { color: colors.muted }]}>Cerrar sesión</Text>
-        </Pressable>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
-  ActivityIndicator,
+  Animated,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -12,11 +12,13 @@ import {
 import { colors, ui } from '../theme';
 import { addQuestion, friendlyError } from '../services';
 import { randomSuggestion } from '../suggestions';
+import { GradientButton, ScalePressable, tap } from './ui';
 
-export default function NewQuestionModal({ visible, onClose, coupleId, uid }) {
+export default function NewQuestionModal({ visible, onClose, coupleId, uid, onCreated }) {
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const spin = useRef(new Animated.Value(0)).current;
 
   function close() {
     setText('');
@@ -24,11 +26,22 @@ export default function NewQuestionModal({ visible, onClose, coupleId, uid }) {
     onClose();
   }
 
+  function inspire() {
+    spin.setValue(0);
+    Animated.timing(spin, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+    setText(randomSuggestion(text));
+  }
+
   async function save() {
-    if (!text.trim()) return setError('Escribe una pregunta.');
+    if (!text.trim()) {
+      tap('warning');
+      return setError('Escribe una pregunta.');
+    }
     setSaving(true);
     try {
       await addQuestion(coupleId, uid, text);
+      tap('success');
+      onCreated?.(text);
       close();
     } catch (e) {
       setError(friendlyError(e));
@@ -37,14 +50,18 @@ export default function NewQuestionModal({ visible, onClose, coupleId, uid }) {
     }
   }
 
+  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={close}>
       <KeyboardAvoidingView
-        style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.35)' }}
+        style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(43,34,48,0.45)' }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={{ backgroundColor: colors.bg, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24 }}>
-          <Text style={[ui.title, { fontSize: 22 }]}>Nueva pregunta</Text>
+        <Pressable style={{ flex: 1 }} onPress={close} />
+        <View style={{ backgroundColor: colors.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 24 }}>
+          <View style={{ alignSelf: 'center', width: 44, height: 5, borderRadius: 3, backgroundColor: colors.border, marginBottom: 16 }} />
+          <Text style={[ui.title, { fontSize: 22 }]}>💌 Nueva pregunta</Text>
           <Text style={ui.subtitle}>Tu pareja la verá y podrá responderla cuando quiera.</Text>
 
           <TextInput
@@ -57,15 +74,26 @@ export default function NewQuestionModal({ visible, onClose, coupleId, uid }) {
             autoFocus
           />
 
-          <Pressable onPress={() => setText(randomSuggestion(text))}>
-            <Text style={{ color: colors.primary, fontWeight: '700', marginTop: 12 }}>✨ Inspírame</Text>
-          </Pressable>
+          <ScalePressable
+            onPress={inspire}
+            style={{
+              alignSelf: 'flex-start',
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: 12,
+              paddingHorizontal: 14,
+              paddingVertical: 8,
+              borderRadius: 999,
+              backgroundColor: colors.primarySoft,
+            }}
+          >
+            <Animated.Text style={{ transform: [{ rotate }], marginRight: 6 }}>✨</Animated.Text>
+            <Text style={{ color: colors.primary, fontWeight: '800' }}>Inspírame</Text>
+          </ScalePressable>
 
           {!!error && <Text style={ui.error}>{error}</Text>}
 
-          <Pressable style={ui.button} onPress={save} disabled={saving}>
-            {saving ? <ActivityIndicator color="#fff" /> : <Text style={ui.buttonText}>Enviar pregunta</Text>}
-          </Pressable>
+          <GradientButton title="Enviar pregunta" onPress={save} loading={saving} />
           <Pressable onPress={close}>
             <Text style={[ui.link, { color: colors.muted }]}>Cancelar</Text>
           </Pressable>

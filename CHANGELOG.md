@@ -2,6 +2,48 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [0.3.0] - 2026-11-17
+
+### Agregado
+- **EAS Update** (`expo-updates`): los cambios de JS se publican sin recompilar ni esperar la fila. Ver `docs/07-actualizaciones.md`.
+- Script `npm run publicar`.
+- **Pantalla de Ajustes ⚙️** (`SettingsModal`): datos de la pareja, estado de notificaciones, exportar, **desvincular pareja** y cerrar sesión.
+- **Desvincular pareja** (`leaveCouple`): sales de la pareja, tu pareja conserva las preguntas y puedes volver con el mismo código o unirte a otra.
+- **Botón 👁️ para ver la contraseña** (`PasswordInput`).
+- **Diagnóstico de notificaciones**: `registerForPush` devuelve en qué paso falló y Ajustes lo muestra.
+- **Nueva interfaz con animaciones** (`src/components/ui.js`):
+  - Degradados en encabezados, botones y botón flotante (`expo-linear-gradient`).
+  - Tarjetas que aparecen escalonadas, botones que se encogen al tocarlos y un indicador de pestañas que se desliza.
+  - Corazones flotando en login y vinculación, y logo que late.
+  - Animación de **revelar** (respuesta que crece con explosión de corazones) cuando respondes y tu pareja ya había respondido.
+  - El formulario vibra y se sacude si hay un error.
+  - Vibración sutil al tocar, enviar y responder (`expo-haptics`).
+  - Resumen con contadores en el encabezado.
+
+### Corregido
+- Las notificaciones no se registraban y no había forma de saber por qué (ver el diagnóstico de arriba).
+
+### Cambiado
+- `app.json`: `runtimeVersion` (política `appVersion`) y `updates.url`.
+- `eas.json`: `channel` por perfil.
+- `firestore.rules`: nueva regla para desvincularse (cada quien solo puede quitarse a sí mismo).
+- Unirse ya no rechaza el código de una pareja que tú creaste, por si saliste y quieres volver.
+
+## [0.2.0] - 2026-11-17
+
+### Agregado
+- **Notificaciones push**, sin servidor: Expo Push API + FCM.
+  - Aviso de pregunta nueva y de respuesta ("te toca" o "ya pueden ver sus respuestas").
+  - Token de cada teléfono guardado en `couples/{id}.tokens[uid]`.
+  - Archivo nuevo: `src/notifications.js`.
+- `eas.json` con perfiles `development` y `preview` (APK).
+- Repositorio público: https://github.com/Romanls11/nosotros-app
+
+### Cambiado
+- `firestore.rules`: regla para que cada integrante guarde solo su token.
+- `app.json`: plugin `expo-notifications` y `googleServicesFile`.
+- Para usar Expo Go ahora se corre `npx expo start --go`, porque se instaló `expo-dev-client`.
+
 ## [0.1.0] - 2026-11-17
 
 ### Agregado
@@ -28,6 +70,6 @@ Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 - **`auth/api-key-not-valid`:** `firebaseConfig.js` se había quedado con los valores de ejemplo.
 
 ### Pendiente
-- Notificaciones push (ver `docs/05-notificaciones.md`).
+- Configurar EAS/FCM y probar las notificaciones en el APK.
 - Generar el APK (ver `docs/06-apk.md`).
 - Mejoras de UI/UX: categorías, modo oscuro, animación al revelar respuestas, reacciones, pregunta del día.

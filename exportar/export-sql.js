@@ -11,7 +11,8 @@
  */
 const fs = require('fs');
 const path = require('path');
-const admin = require('firebase-admin');
+const { initializeApp, cert } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
 
 const dialect = (process.argv[2] || 'mysql').toLowerCase();
 if (!['mysql', 'postgres'].includes(dialect)) {
@@ -26,8 +27,8 @@ if (!fs.existsSync(keyPath)) {
   process.exit(1);
 }
 
-admin.initializeApp({ credential: admin.credential.cert(require(keyPath)) });
-const db = admin.firestore();
+initializeApp({ credential: cert(require(keyPath)) });
+const db = getFirestore();
 
 // ---------- Helpers SQL ----------
 const q = (name) => (dialect === 'mysql' ? `\`${name}\`` : `"${name}"`);

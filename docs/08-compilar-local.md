@@ -74,4 +74,29 @@ Si vuelves a usar `eas build`, pasa lo mismo al revés. Elige un método y quéd
 | `SDK location not found` | Revisa `ANDROID_HOME` y vuelve a abrir la terminal |
 | `JAVA_HOME is not set` / versión de Java incorrecta | Revisa `JAVA_HOME` (debe apuntar a `Android Studio\jbr`) |
 | `Filename longer than 260 characters` / errores de CMake | Usa la ruta corta `C:\dev\nosotros` |
+| `ninja: error: mkdir(...): No such file or directory` | Rutas largas: activa `LongPathsEnabled` y reemplaza `ninja.exe` por la 1.12+ (ver abajo) |
 | Se queda mucho en `Downloading...` la primera vez | Es normal: descarga Gradle, NDK y dependencias |
+
+## Solución: rutas largas en Windows (error `ninja: error: mkdir`)
+El `ninja.exe` que trae CMake 3.22.1 no soporta rutas de más de 260 caracteres, y React Native las genera aunque el proyecto esté en `C:\dev`.
+
+1. PowerShell **como administrador**:
+```powershell
+New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+```
+2. Reiniciar la PC.
+3. Reemplazar `ninja.exe` por la versión 1.12.1 (PowerShell normal):
+```powershell
+$ninja = "$env:LOCALAPPDATA\Android\Sdk\cmake\3.22.1\bin\ninja.exe"
+Copy-Item $ninja "$ninja.bak"
+Invoke-WebRequest https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip -OutFile "$env:TEMP\ninja.zip"
+Expand-Archive "$env:TEMP\ninja.zip" -DestinationPath "$env:TEMP\ninja" -Force
+Copy-Item "$env:TEMP\ninja\ninja.exe" $ninja -Force
+& $ninja --version   # debe decir 1.12.1
+```
+4. Limpiar y compilar:
+```powershell
+cd C:\dev\nosotros\android
+Remove-Item -Recurse -Force app\.cxx, app\build -ErrorAction SilentlyContinue
+.\gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
+```

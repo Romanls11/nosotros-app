@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { colors, shadow, ui } from '../theme';
-import { friendlyError, leaveCouple, logout } from '../services';
+import { friendlyError, leaveCouple, logout, resetPassword } from '../services';
 import { FadeIn, ScalePressable, tap } from './ui';
 
 function Row({ icon, title, subtitle, onPress, danger, right }) {
@@ -123,6 +123,21 @@ export default function SettingsModal({
               danger
               onPress={confirmLeave}
               right={leaving ? <ActivityIndicator color={colors.danger} /> : undefined}
+            />
+            <Divider />
+            <Row
+              icon="🔑"
+              title="Cambiar contraseña"
+              subtitle="Te enviamos un correo para elegir una nueva"
+              onPress={async () => {
+                try {
+                  await resetPassword(user.email);
+                  tap('success');
+                  Alert.alert('Correo enviado 📩', `Revisa ${user.email} (y la carpeta de spam) para elegir tu nueva contraseña.`);
+                } catch (e) {
+                  Alert.alert('No se pudo enviar', friendlyError(e));
+                }
+              }}
             />
             <Divider />
             <Row

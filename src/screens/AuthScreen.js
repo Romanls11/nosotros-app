@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, shadow, ui } from '../theme';
-import { friendlyError, login, register } from '../services';
+import { friendlyError, login, register, resetPassword } from '../services';
 import { FadeIn, FloatingHearts, GradientButton, PasswordInput, Pulse, tap } from '../components/ui';
 
 export default function AuthScreen() {
@@ -22,6 +22,7 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
   const shake = useRef(new Animated.Value(0)).current;
 
   const isRegister = mode === 'register';
@@ -32,6 +33,19 @@ export default function AuthScreen() {
     Animated.sequence(
       [10, -10, 7, -7, 0].map((x) => Animated.timing(shake, { toValue: x, duration: 60, useNativeDriver: true }))
     ).start();
+  }
+
+  async function forgot() {
+    setError('');
+    setInfo('');
+    if (!email.trim()) return showError('Escribe tu correo arriba y vuelve a tocar "¿Olvidaste tu contraseña?".');
+    try {
+      await resetPassword(email);
+      tap('success');
+      setInfo(`Te enviamos un correo a ${email.trim()} para cambiar tu contraseña. Revisa también la carpeta de spam.`);
+    } catch (e) {
+      showError(friendlyError(e));
+    }
   }
 
   async function submit() {
@@ -93,6 +107,7 @@ export default function AuthScreen() {
                       onPress={() => {
                         tap('light');
                         setError('');
+                        setInfo('');
                         setMode(o.k);
                       }}
                       style={{
@@ -136,7 +151,14 @@ export default function AuthScreen() {
                   onSubmitEditing={submit}
                 />
 
+                {!isRegister && (
+                  <Pressable onPress={forgot} hitSlop={8} style={{ alignSelf: 'flex-end', marginTop: 10 }}>
+                    <Text style={{ color: colors.primary, fontWeight: '700', fontSize: 13 }}>¿Olvidaste tu contraseña?</Text>
+                  </Pressable>
+                )}
+
                 {!!error && <Text style={ui.error}>{error}</Text>}
+                {!!info && <Text style={{ color: colors.ok, marginTop: 12, textAlign: 'center' }}>{info}</Text>}
 
                 <GradientButton title={isRegister ? 'Crear cuenta' : 'Entrar'} onPress={submit} loading={loading} />
               </Animated.View>

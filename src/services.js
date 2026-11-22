@@ -1,5 +1,6 @@
 import {
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
@@ -34,6 +35,10 @@ export async function register(name, email, password) {
 
 export function login(email, password) {
   return signInWithEmailAndPassword(auth, email.trim(), password);
+}
+
+export function resetPassword(email) {
+  return sendPasswordResetEmail(auth, email.trim());
 }
 
 export function logout() {
@@ -121,6 +126,8 @@ export function deleteQuestion(coupleId, questionId) {
 export function friendlyError(e) {
   const map = {
     'auth/invalid-email': 'El correo no es válido.',
+    'auth/missing-email': 'Escribe tu correo primero.',
+    'auth/too-many-requests': 'Demasiados intentos. Espera unos minutos.',
     'auth/email-already-in-use': 'Ese correo ya tiene cuenta. Inicia sesión.',
     'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
     'auth/invalid-credential': 'Correo o contraseña incorrectos.',

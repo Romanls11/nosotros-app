@@ -10,6 +10,8 @@ Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 - **Pantalla de Ajustes ⚙️** (`SettingsModal`): datos de la pareja, estado de notificaciones, exportar, **desvincular pareja** y cerrar sesión.
 - **Desvincular pareja** (`leaveCouple`): sales de la pareja, tu pareja conserva las preguntas y puedes volver con el mismo código o unirte a otra.
 - **Botón 👁️ para ver la contraseña** (`PasswordInput`).
+- **¿Olvidaste tu contraseña?** en el login (`resetPassword` → correo de Firebase).
+- Herramienta `exportar/cambiar-password.js`: lista los correos registrados (`--lista`) y cambia la contraseña de una cuenta con la clave de administrador.
 - **Diagnóstico de notificaciones**: `registerForPush` devuelve en qué paso falló y Ajustes lo muestra.
 - **Nueva interfaz con animaciones** (`src/components/ui.js`):
   - Degradados en encabezados, botones y botón flotante (`expo-linear-gradient`).

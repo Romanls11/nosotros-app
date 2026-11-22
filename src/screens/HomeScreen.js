@@ -14,6 +14,7 @@ import SettingsModal from '../components/SettingsModal';
 import DailyCard from '../components/DailyCard';
 import StatsModal from '../components/StatsModal';
 import { CATEGORIES, soft } from '../categories';
+import { isLocked, scheduleCapsuleReminders } from '../capsule';
 import { dailyQuestionFor, dailyStreak, todayKey } from '../daily';
 import { ensureDailyQuestion } from '../services';
 import { useTheme } from '../themeContext';
@@ -66,6 +67,11 @@ export default function HomeScreen({ user, coupleId }) {
   const myName = names[user.uid] || 'Tu pareja';
   const partnerToken = partnerId ? couple?.tokens?.[partnerId] : null;
 
+  // ⏳ Aviso local el día que se abre cada cápsula
+  useEffect(() => {
+    if (questions) scheduleCapsuleReminders(questions);
+  }, [questions]);
+
   // ---------- Notificaciones ----------
   const [push, setPush] = useState(null); // { ok, step, message }
   useEffect(() => {
@@ -89,7 +95,9 @@ export default function HomeScreen({ user, coupleId }) {
     sendPush(partnerToken, `💌 ${myName} te hizo una pregunta`, preview(text));
   }
   function notifyAnswered(question, partnerAlreadyAnswered) {
-    if (partnerAlreadyAnswered) {
+    if (isLocked(question)) {
+      sendPush(partnerToken, `⏳ ${myName} guardó su respuesta en la cápsula`, preview(question.text));
+    } else if (partnerAlreadyAnswered) {
       sendPush(partnerToken, `👀 ¡${myName} respondió!`, `Ya pueden ver sus respuestas: ${preview(question.text, 70)}`);
     } else {
       sendPush(partnerToken, `✍️ ${myName} respondió, te toca`, preview(question.text));

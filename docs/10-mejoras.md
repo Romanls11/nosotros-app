@@ -10,7 +10,7 @@ Se implementan **una por una**. Cada una se publica con `npm run publicar`, salv
 | 4 | 😍 Reacciones y mini chat por pregunta | ✅ Hecha | 0.7.0 |
 | 5 | 📊 "Nuestro mapa": estadísticas visuales | ✅ Hecha | 0.8.0 |
 | 6 | 🏷️ Categorías con color (profundas, divertidas, futuro…) | ✅ Hecha | 0.9.0 |
-| 7 | ⏳ Cápsula del tiempo (preguntas que se abren en una fecha) | Pendiente | — |
+| 7 | ⏳ Cápsula del tiempo (preguntas que se abren en una fecha) | ✅ Hecha | 1.0.0 |
 
 ## ⏸️ Pendientes por probar
 - **Notificaciones push** (desde la v0.2.0). Las reglas completas se publicaron el 22-nov-2026 con la regla de tokens que faltaba. Falta confirmar en los dos teléfonos:
@@ -71,3 +71,16 @@ Se abre con el botón **📊** del encabezado (cuando ya hay pareja). Todo se ca
 - **Filtro** en la pantalla principal, debajo de la pregunta del día. Aparece en cuanto hay preguntas con categoría, muestra cuántas hay en cada una y se combina con las pestañas.
 - **Nuestro mapa** muestra la categoría favorita, y la **exportación SQL** incluye la columna `category`.
 - Los colores suaves usan transparencia (`soft()`), así que se ven bien en modo claro y oscuro.
+
+## 7. Cápsula del tiempo
+- Al crear una pregunta se activa **⏳ Cápsula del tiempo** y se elige cuándo se abre: en 1 semana, 1 mes, 3 meses, 6 meses, 1 año, o **📅 otra fecha** escrita como DD/MM/AAAA (por ejemplo, su aniversario). Se abre a las 9:00 a.m. de ese día.
+- Los dos pueden responder **cuando quieran**, pero la respuesta de la pareja **no se ve hasta la fecha**. La idea es escribir pensando en ese día.
+- Se guarda en `questions/{id}.unlockAt` (Timestamp). Ninguna regla permite cambiarla después de crearla.
+- **Tarjetas:** "⏳ Cápsula · se abre en 84 días" o "🔓 Cápsula abierta".
+- **El día que se abre:** cada teléfono programa un **aviso local** (`expo-notifications`) que dice "⏳ ¡Se abrió su cápsula del tiempo!". La primera vez que la ven abierta se reproduce la animación de revelar 💞.
+- **Al responder una cápsula cerrada** la pareja recibe "⏳ Román guardó su respuesta en la cápsula", sin contenido.
+- Mientras está cerrada no hay reacciones ni chat. **Nuestro mapa** ignora las cápsulas cerradas para no adelantar palabras.
+- Lo de no ver la respuesta lo controla la app, igual que en las preguntas normales.
+
+---
+🎉 **Plan de mejoras completo (v1.0.0).**

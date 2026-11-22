@@ -17,6 +17,7 @@ import {
   increment,
   serverTimestamp,
   setDoc,
+  Timestamp,
   updateDoc,
   writeBatch,
 } from 'firebase/firestore';
@@ -104,13 +105,14 @@ export async function leaveCouple(uid, coupleId) {
 
 // ---------- Preguntas ----------
 
-export function addQuestion(coupleId, uid, text, category = null) {
+export function addQuestion(coupleId, uid, text, category = null, unlockAt = null) {
   return addDoc(collection(db, 'couples', coupleId, 'questions'), {
     text: text.trim(),
     authorId: uid,
     createdAt: serverTimestamp(),
     answers: {},
     ...(category ? { category } : {}),
+    ...(unlockAt ? { unlockAt: Timestamp.fromDate(unlockAt) } : {}),
   });
 }
 

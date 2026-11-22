@@ -19,6 +19,12 @@ Hecha con **Expo (React Native)** y **Firebase** en su plan gratuito: sin servid
 - 🗂️ **Pestañas:** *Por responder*, *Esperando* y *Respondidas*.
 - ⚡ **Tiempo real:** los cambios aparecen al instante en los dos teléfonos.
 - ☀️ **Pregunta del día** con racha 🔥 de días seguidos.
+- 😍 **Reacciones** y 💬 **mini chat** en cada pregunta.
+- 🏷️ **Categorías** con color y filtro.
+- ⏳ **Cápsula del tiempo**: respuestas que se abren en una fecha especial.
+- 📊 **Nuestro mapa**: estadísticas de la pareja.
+- 👆 **Deslizar tarjetas** para responder o dejar para después.
+- 🌙 **Modo oscuro**.
 - 🔔 **Notificaciones push** cuando hay pregunta nueva o respuesta.
 - 💔 **Desvincular pareja** y volver a vincularse desde Ajustes.
 - ✨ **Interfaz animada:** degradados, revelado de respuestas con corazones y vibración sutil.

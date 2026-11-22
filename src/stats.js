@@ -1,5 +1,6 @@
 // Cálculos para "Nuestro mapa". Todo sale de las preguntas que ya están cargadas (no hace lecturas extra).
 import { todayKey } from './daily';
+import { isLocked } from './capsule';
 
 const STOP = new Set(
   ('a al algo algun alguna algunas alguno algunos ante antes aqui asi aun bien cada casi como con contra cosa cosas cual cuando de del desde donde dos el ella ellas ellos en entre era eran es esa esas ese eso esos esta estaba estado estan estar este esto estos estoy fue fueron ha habia han hasta hay he hoy la las le les lo los mas me mi mis mismo mucho muy nada ni no nos nosotros o otra otras otro otros para pero poco por porque que quien se sea ser si sido siempre sin sobre solo son su sus tambien tan tanto te tener tengo ti tiene tienen todo todos tu tus un una uno unos y ya yo vez veces hace hacer creo pues bueno asi eh ah jaja jajaja jeje'
@@ -97,8 +98,10 @@ export function computeStats({ questions = [], couple, uid, partnerId }) {
   });
 
   // Palabras
-  const myTexts = questions.map((q) => q.answers?.[uid]?.text).filter(Boolean);
-  const theirTexts = questions.map((q) => q.answers?.[partnerId]?.text).filter(Boolean);
+  // Las cápsulas cerradas no cuentan (no queremos adelantar sus respuestas)
+  const open = questions.filter((q) => !isLocked(q));
+  const myTexts = open.map((q) => q.answers?.[uid]?.text).filter(Boolean);
+  const theirTexts = open.map((q) => q.answers?.[partnerId]?.text).filter(Boolean);
   const myTop = topWords(myTexts, 8);
   const theirTop = topWords(theirTexts, 8);
   const theirSet = new Set(topWords(theirTexts, 40).map((x) => x.w));

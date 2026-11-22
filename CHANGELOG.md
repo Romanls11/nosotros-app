@@ -2,6 +2,18 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [1.0.0] - 2026-11-22 🎉
+
+Se completan las 7 mejoras del plan (`docs/10-mejoras.md`).
+
+### Agregado
+- **⏳ Cápsula del tiempo** (`src/capsule.js`): preguntas cuyas respuestas se abren en una fecha, con opciones rápidas o una fecha propia, aviso local el día que se abren y animación de revelar.
+- Notificación "guardó su respuesta en la cápsula".
+
+### Cambiado
+- La ventana de nueva pregunta ahora se puede desplazar.
+- *Nuestro mapa* ignora las cápsulas cerradas.
+
 ## [0.9.0] - 2026-11-22
 
 ### Agregado

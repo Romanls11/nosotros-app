@@ -191,7 +191,7 @@ export default function SettingsModal({
             />
           </Section>
 
-          <Text style={{ textAlign: 'center', color: colors.muted, marginTop: 28, fontSize: 12 }}>nosotros · v0.3.0</Text>
+          <Text style={{ textAlign: 'center', color: colors.muted, marginTop: 28, fontSize: 12 }}>nosotros · v1.0.0</Text>
         </ScrollView>
       </View>
     </Modal>

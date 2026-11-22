@@ -19,6 +19,7 @@ import { formatDate } from './QuestionCard';
 import { FadeIn, GradientButton, tap } from './ui';
 import { Chat, ReactionBadge, ReactionBar } from './Conversation';
 import CategoryPill from './CategoryPill';
+import { countdownText, formatLong, isCapsule, isLocked, markCapsuleSeen, unlockDate } from '../capsule';
 
 function AnswerBox({ title, children, soft }) {
   const box = [
@@ -105,12 +106,19 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
   const partnerAnswer = partnerId ? question?.answers?.[partnerId] : null;
   const partnerName = (partnerId && names[partnerId]) || 'Tu pareja';
 
+  const capsule = isCapsule(question);
+  const locked = isLocked(question);
+
   // Reinicia el estado cada vez que se abre una pregunta distinta
   useEffect(() => {
     setDraft(myAnswer?.text || '');
     setEditing(!myAnswer);
     setError('');
     setJustRevealed(false);
+    // Cápsula recién abierta y con las dos respuestas: animación la primera vez que la ves
+    if (question && capsule && !locked && myAnswer && partnerAnswer) {
+      markCapsuleSeen(question.id).then((first) => first && setJustRevealed(true));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question?.id]);
 
@@ -129,8 +137,8 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
       tap('success');
       // Solo se avisa la primera vez que respondes (no en ediciones)
       if (isFirstAnswer) onAnswered?.(question, !!partnerAnswer);
-      // Si tu pareja ya había respondido, ¡momento de revelar!
-      if (isFirstAnswer && partnerAnswer) setJustRevealed(true);
+      // Si tu pareja ya había respondido, ¡momento de revelar! (salvo cápsula cerrada)
+      if (isFirstAnswer && partnerAnswer && !locked) setJustRevealed(true);
       setEditing(false);
     } catch (e) {
       setError(friendlyError(e));
@@ -174,6 +182,13 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
                 {question.daily ? '☀️ Pregunta del día' : question.authorId === uid ? 'Tú preguntaste' : `${names[question.authorId] || 'Tu pareja'} preguntó`} ·{' '}
                 {formatDate(question.createdAt)}
               </Text>
+              {capsule && (
+                <View style={{ marginTop: 10, alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.22)', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
+                  <Text style={{ color: '#fff', fontWeight: '800', fontSize: 12 }}>
+                    {locked ? `⏳ Cápsula · ${countdownText(question)} (${formatLong(unlockDate(question))})` : '🔓 Cápsula abierta'}
+                  </Text>
+                </View>
+              )}
               {!!question.category && (
                 <View style={{ marginTop: 10 }}>
                   <CategoryPill category={question.category} onDark />
@@ -222,19 +237,26 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
             {/* Respuesta de la pareja */}
             {partnerId && (
               <FadeIn delay={200}>
-                {!partnerAnswer && (
+                {locked && (
+                  <AnswerBox title={`⏳ Respuesta de ${partnerName}`} soft>
+                    <Text style={{ color: colors.primaryDark, fontSize: 15, fontWeight: '700', lineHeight: 22 }}>
+                      {partnerAnswer ? '¡Ya respondió! ' : ''}Las respuestas de esta cápsula se abren el {formatLong(unlockDate(question))}. Escribe la tuya pensando en ese día. 💌
+                    </Text>
+                  </AnswerBox>
+                )}
+                {!locked && !partnerAnswer && (
                   <AnswerBox title={`💭 Respuesta de ${partnerName}`}>
                     <Text style={{ color: colors.muted, fontSize: 15 }}>Todavía no responde ⏳</Text>
                   </AnswerBox>
                 )}
-                {partnerAnswer && !myAnswer && (
+                {!locked && partnerAnswer && !myAnswer && (
                   <AnswerBox title={`🔒 Respuesta de ${partnerName}`} soft>
                     <Text style={{ color: colors.primaryDark, fontSize: 15, fontWeight: '700' }}>
                       ¡Ya respondió! Responde tú primero para ver lo que dijo.
                     </Text>
                   </AnswerBox>
                 )}
-                {partnerAnswer && myAnswer && (
+                {!locked && partnerAnswer && myAnswer && (
                   <Reveal play={justRevealed}>
                     <AnswerBox title={`💞 Respuesta de ${partnerName}`} soft>
                       <Text style={{ fontSize: 16, color: colors.text, lineHeight: 24 }}>{partnerAnswer.text}</Text>
@@ -246,7 +268,7 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
             )}
 
             {/* Mini chat: cuando los dos ya respondieron */}
-            {partnerAnswer && myAnswer && (
+            {!locked && partnerAnswer && myAnswer && (
               <Chat
                 coupleId={coupleId}
                 question={question}

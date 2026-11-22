@@ -12,6 +12,7 @@ import NewQuestionModal from '../components/NewQuestionModal';
 import QuestionModal from '../components/QuestionModal';
 import SettingsModal from '../components/SettingsModal';
 import DailyCard from '../components/DailyCard';
+import StatsModal from '../components/StatsModal';
 import { dailyQuestionFor, dailyStreak, todayKey } from '../daily';
 import { ensureDailyQuestion } from '../services';
 import { useTheme } from '../themeContext';
@@ -31,6 +32,7 @@ export default function HomeScreen({ user, coupleId }) {
   const [tab, setTab] = useState('pending');
   const [showNew, setShowNew] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const [openId, setOpenId] = useState(null);
 
   // Si un listener falla (p. ej. permisos aún propagándose), se reintenta solo
@@ -185,6 +187,22 @@ export default function HomeScreen({ user, coupleId }) {
                 {names[user.uid]} {partnerName ? `& ${partnerName}` : '· esperando a tu pareja'}
               </Text>
             </FadeIn>
+            {partnerId && (
+              <ScalePressable
+                onPress={() => setShowStats(true)}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  backgroundColor: 'rgba(255,255,255,0.22)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 10,
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>📊</Text>
+              </ScalePressable>
+            )}
             <ScalePressable
               onPress={() => setShowSettings(true)}
               style={{
@@ -398,6 +416,15 @@ export default function HomeScreen({ user, coupleId }) {
         onAnswered={notifyAnswered}
         onReacted={notifyReaction}
         onCommented={notifyComment}
+      />
+
+      <StatsModal
+        visible={showStats}
+        onClose={() => setShowStats(false)}
+        questions={questions}
+        couple={couple}
+        uid={user.uid}
+        partnerId={partnerId}
       />
 
       <SettingsModal

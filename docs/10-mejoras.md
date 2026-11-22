@@ -8,9 +8,16 @@ Se implementan **una por una**. Cada una se publica con `npm run publicar`, salv
 | 2 | 🌙 Modo oscuro (paleta ciruela) | ✅ Hecha | 0.5.0 |
 | 3 | 👆 Deslizar tarjetas para responder o posponer | ✅ Hecha | 0.6.0 |
 | 4 | 😍 Reacciones y mini chat por pregunta | ✅ Hecha | 0.7.0 |
-| 5 | 📊 "Nuestro mapa": estadísticas visuales | Pendiente | — |
+| 5 | 📊 "Nuestro mapa": estadísticas visuales | ✅ Hecha | 0.8.0 |
 | 6 | 🏷️ Categorías con color (profundas, divertidas, futuro…) | Pendiente | — |
 | 7 | ⏳ Cápsula del tiempo (preguntas que se abren en una fecha) | Pendiente | — |
+
+## ⏸️ Pendientes por probar
+- **Notificaciones push** (desde la v0.2.0). Las reglas completas se publicaron el 22-nov-2026 con la regla de tokens que faltaba. Falta confirmar en los dos teléfonos:
+  1. **⚙️ Ajustes → Notificaciones** debe decir 🔔 *Activas* en ambos.
+  2. Hacer una pregunta con la app cerrada en el otro teléfono y ver que llegue 💌.
+  3. Si no llega: tocar la campanita y anotar en qué paso falla.
+- **Opción "Sistema" del modo oscuro:** se activa con el próximo APK.
 
 ## 1. Pregunta del día
 - Una pregunta **igual para los dos**, que cambia a medianoche (hora del teléfono).
@@ -44,3 +51,14 @@ Se implementan **una por una**. Cada una se publica con `npm run publicar`, salv
 - **Tarjetas:** muestran las reacciones y el contador 💬.
 - **Notificaciones:** "❤️ Román reaccionó a tu respuesta" y "💬 Román: …".
 - **Reglas nuevas:** reacciones (solo la tuya), contador (solo +1) y `comments` (solo integrantes, autor = tú, de 1 a 500 caracteres). Se agregó la función `onlyMyKey()`.
+
+## 5. Nuestro mapa
+Se abre con el botón **📊** del encabezado (cuando ya hay pareja). Todo se calcula en el teléfono con las preguntas ya cargadas (`src/stats.js`), así que **no gasta lecturas extra** de Firebase.
+- **Números grandes:** preguntas, respondidas juntos y % de complicidad (preguntas que respondieron los dos ÷ total).
+- **Rachas:** actual 🔥 y la mejor 🏆 de preguntas del día.
+- **¿Quién pregunta más?:** barra dividida en los colores de cada quien. No cuenta las preguntas del día.
+- **¿Quién responde más rápido?:** tiempo promedio desde que se crea la pregunta hasta que se responde, con ⚡ para quien gana.
+- **Su semana:** barras por día con las respuestas de cada quien en los últimos 7 días.
+- **Lo que comparten 💛:** palabras que los dos usan en sus respuestas, sin contar palabras comunes ("que", "para"…) ni acentos.
+- **Las palabras de cada quien** y **datos curiosos**: reacción favorita, mensajes del chat y respuesta más larga.
+- Las barras crecen animadas y las tarjetas aparecen escalonadas. No usa librerías de gráficas.

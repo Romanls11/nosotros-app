@@ -2,6 +2,12 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [0.8.0] - 2026-11-22
+
+### Agregado
+- **📊 Nuestro mapa** (`src/components/StatsModal.js` y `src/stats.js`): complicidad, rachas, quién pregunta más, quién responde más rápido, actividad de la semana, palabras en común y datos curiosos.
+- Botón 📊 en el encabezado.
+
 ## [0.7.0] - 2026-11-22
 
 ### Agregado

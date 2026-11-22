@@ -19,6 +19,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import ConsentScreen from './src/screens/ConsentScreen';
 import { LEGAL } from './src/legal';
+import { ToastProvider } from './src/toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { WelcomeContext } from './src/welcome';
 
@@ -92,9 +93,11 @@ export default function App() {
      <WelcomeContext.Provider value={() => setWelcome(true)}>
       <SafeAreaProvider>
         <StatusBar style={theme.scheme === 'dark' ? 'light' : 'dark'} />
-        <View style={{ flex: 1, backgroundColor: colors.bg }}>
-          {content}
-        </View>
+        <ToastProvider>
+          <View style={{ flex: 1, backgroundColor: colors.bg }}>
+            {content}
+          </View>
+        </ToastProvider>
       </SafeAreaProvider>
      </WelcomeContext.Provider>
     </ThemeContext.Provider>

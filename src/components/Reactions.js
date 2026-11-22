@@ -55,22 +55,22 @@ const MOTION = {
 const DURATION = { '❤️': 1400, '😂': 1300, '🥹': 2200, '😮': 1600, '🔥': 900, '🙏': 1800 };
 
 /** Envuelve un emoji y lo anima según su tipo (en bucle, con pausas) */
-export function ReactionAnim({ emoji, children, delay = 0, style }) {
+export function ReactionAnim({ emoji, children, delay = 0, style, loop = true }) {
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (!emoji) return;
     v.setValue(0);
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.delay(delay),
-        Animated.timing(v, { toValue: 1, duration: DURATION[emoji] || 1400, easing: Easing.linear, useNativeDriver: true }),
-        Animated.timing(v, { toValue: 0, duration: 0, useNativeDriver: true }),
-        Animated.delay(1600),
-      ])
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [emoji]);
+    const once = Animated.sequence([
+      Animated.delay(delay),
+      Animated.timing(v, { toValue: 1, duration: DURATION[emoji] || 1400, easing: Easing.linear, useNativeDriver: true }),
+      Animated.timing(v, { toValue: 0, duration: 0, useNativeDriver: true }),
+      Animated.delay(1600),
+    ]);
+    // En la lista se anima una sola vez (ahorra batería); en el detalle, en bucle
+    const anim = loop ? Animated.loop(once) : once;
+    anim.start();
+    return () => anim.stop();
+  }, [emoji, loop]);
   const motion = MOTION[emoji] ? MOTION[emoji](v) : {};
   return <Animated.View style={[style, motion]}>{children}</Animated.View>;
 }
@@ -368,7 +368,7 @@ export function ReactionStack({ reactions }) {
             zIndex: list.length - i,
           }}
         >
-          <ReactionAnim emoji={e} delay={i * 400}>
+          <ReactionAnim emoji={e} delay={300 + i * 400} loop={false}>
             <Text style={{ fontSize: 13 }}>{e}</Text>
           </ReactionAnim>
         </View>

@@ -16,12 +16,14 @@ import { randomSuggestion } from '../suggestions';
 import { GradientButton, ScalePressable, tap } from './ui';
 import { CATEGORIES, randomIdea, soft } from '../categories';
 import { formatLong, parseDate, presetDates } from '../capsule';
+import { useToast } from '../toast';
 
 export default function NewQuestionModal({ visible, onClose, coupleId, uid, onCreated }) {
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [category, setCategory] = useState(null);
+  const toast = useToast();
   const [capsule, setCapsule] = useState(false);
   const [preset, setPreset] = useState('1m');
   const [custom, setCustom] = useState('');
@@ -60,6 +62,7 @@ export default function NewQuestionModal({ visible, onClose, coupleId, uid, onCr
     try {
       await addQuestion(coupleId, uid, text, category, unlockAt);
       tap('success');
+      toast(unlockAt ? `Cápsula creada · se abre el ${formatLong(unlockAt)}` : 'Pregunta enviada', unlockAt ? '⏳' : '💌');
       onCreated?.(text);
       close();
     } catch (e) {

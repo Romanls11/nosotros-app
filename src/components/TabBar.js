@@ -78,7 +78,7 @@ export default function TabBar({ tabs, active, onChange }) {
               style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '100%' }}
             >
               <View>
-                <Text style={{ fontSize: isActive ? 22 : 20, textAlign: 'center' }}>{t.icon}</Text>
+                <Text style={{ fontSize: isActive ? 22 : 20, textAlign: 'center' }} maxFontSizeMultiplier={1.2}>{t.icon}</Text>
                 {!!t.badge && (
                   <View
                     style={{
@@ -126,6 +126,7 @@ export default function TabBar({ tabs, active, onChange }) {
                   color: isActive ? '#fff' : colors.muted,
                 }}
                 numberOfLines={1}
+                maxFontSizeMultiplier={1.2}
               >
                 {t.label}
               </Text>

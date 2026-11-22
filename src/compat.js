@@ -41,7 +41,7 @@ export const PACKS = [
     key: 'diversion',
     title: 'Diversión',
     emoji: '🎉',
-    colors: ['#E0A100', '#FF7A59'],
+    colors: ['#E8590C', '#C2255C'], // naranja → frambuesa (buen contraste con texto blanco)
     questions: [
       { q: 'Género de película favorito:', o: ['😂 Comedia', '😱 Terror', '💘 Romance', '💥 Acción'] },
       { q: 'Plan de viernes:', o: ['🎤 Karaoke', '🎮 Videojuegos', '🍿 Series', '💃 Salir a bailar'] },

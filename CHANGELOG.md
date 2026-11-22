@@ -2,6 +2,20 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [1.7.0] - 2026-11-22
+
+### Agregado
+- **✓ Avisos breves (toasts)** (`src/toast.js`): "Respuesta guardada", "Pregunta enviada", "Cápsula creada · se abre el…", "Voto guardado en secreto", "Guardada para después", "Te desvinculaste"…
+- **Esqueletos de carga** (`src/components/Skeleton.js`) en lugar del círculo girando.
+- **Pantallas vacías** con ilustración, título, explicación y botón de acción ("Hacer una pregunta" o "Quitar filtro").
+
+### Cambiado (accesibilidad y pulido)
+- Test *Diversión*: degradado naranja → frambuesa, con mejor contraste para el texto blanco.
+- Títulos y barra inferior limitan el crecimiento de la letra (`maxFontSizeMultiplier`), para que no se rompan con letra grande.
+- Etiquetas de accesibilidad en el botón + y en la barra inferior. Los títulos se marcan como encabezado.
+- **Menos animaciones en bucle:** en las tarjetas de la lista las reacciones se animan **una sola vez**; en el detalle siguen en bucle. Ahorra batería.
+- Escala de espaciado `space` en `theme.js` (4, 8, 12, 16, 20, 24, 32).
+
 ## [1.6.0] - 2026-11-22
 
 ### Cambiado: nueva navegación

@@ -30,6 +30,8 @@ import { ensureDailyQuestion } from '../services';
 import { useTheme } from '../themeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FadeIn, GradientHeader, ScalePressable, tap } from '../components/ui';
+import { HomeSkeleton } from '../components/Skeleton';
+import { useToast } from '../toast';
 
 const LIST_TABS = [
   { key: 'pending', label: 'Por responder', empty: 'No tienes preguntas pendientes 🎉\nToca “+” para hacerle una a tu pareja.' },
@@ -105,7 +107,9 @@ function TabHeader({ title, subtitle, right, children }) {
       <SafeAreaView edges={['top']}>
         <View style={{ paddingHorizontal: 20, paddingTop: 8, flexDirection: 'row', alignItems: 'center' }}>
           <FadeIn style={{ flex: 1 }}>
-            <Text style={{ fontSize: 30, fontFamily: fonts.display, color: '#fff', letterSpacing: -0.5 }}>{title}</Text>
+            <Text style={{ fontSize: 30, fontFamily: fonts.display, color: '#fff', letterSpacing: -0.5 }} maxFontSizeMultiplier={1.3} accessibilityRole="header">
+              {title}
+            </Text>
             {!!subtitle && <Text style={{ color: 'rgba(255,255,255,0.92)', marginTop: 2, fontWeight: '600' }}>{subtitle}</Text>}
           </FadeIn>
           {right}
@@ -119,6 +123,7 @@ function TabHeader({ title, subtitle, right, children }) {
 export default function HomeScreen({ user, coupleId }) {
   const { scheme } = useTheme(); // para volver a dibujar al cambiar de tema
   const insets = useSafeAreaInsets();
+  const toast = useToast();
   const [page, setPage] = useState('today'); // today | questions | games | us
   const [couple, setCouple] = useState(null);
   const [questions, setQuestions] = useState(null);
@@ -258,6 +263,7 @@ export default function HomeScreen({ user, coupleId }) {
     AsyncStorage.getItem(HINT_KEY).then((v) => !v && setShowHint(true)).catch(() => {});
   }, [SNOOZE_KEY]);
   function toggleSnooze(id) {
+    toast(snoozes[id] ? 'Regresó a pendientes' : 'Guardada para después', snoozes[id] ? '↩️' : '⏰', 'info');
     setSnoozes((prev) => {
       const next = { ...prev };
       if (next[id]) delete next[id];
@@ -345,12 +351,7 @@ export default function HomeScreen({ user, coupleId }) {
   const openQuestion = questions?.find((q) => q.id === openId) || null;
 
   if (!couple || !questions) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>
-        <Text style={{ fontSize: 42 }}>💞</Text>
-        <ActivityIndicator color={colors.primary} style={{ marginTop: 12 }} />
-      </View>
-    );
+    return <HomeSkeleton />;
   }
 
   const bottomSpace = TAB_BAR_HEIGHT + Math.max(insets.bottom, 10) + 30;
@@ -563,16 +564,50 @@ export default function HomeScreen({ user, coupleId }) {
           />
         )}
         ListEmptyComponent={
-          <FadeIn style={{ alignItems: 'center', marginTop: 40 }}>
-            <Text style={{ fontSize: 44 }}>{tab === 'done' ? '💞' : tab === 'waiting' ? '⏳' : '🌸'}</Text>
-            <Text style={{ textAlign: 'center', color: colors.muted, marginTop: 10, lineHeight: 22 }}>{LIST_TABS[tabIndex].empty}</Text>
+          <FadeIn style={{ alignItems: 'center', marginTop: 30, paddingHorizontal: 10 }}>
+            <LinearGradient
+              colors={gradients.reveal}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ width: 110, height: 110, borderRadius: 55, alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Text style={{ fontSize: 50 }}>{filter ? '🔎' : tab === 'done' ? '💞' : tab === 'waiting' ? '⏳' : '🌸'}</Text>
+            </LinearGradient>
+            <Text style={{ fontFamily: fonts.bold, fontSize: 18, color: colors.text, marginTop: 16, textAlign: 'center' }}>
+              {filter ? 'Nada en esta categoría' : tab === 'pending' ? '¡Todo respondido!' : tab === 'waiting' ? 'Nada en espera' : 'Aún no hay respuestas juntos'}
+            </Text>
+            <Text style={{ textAlign: 'center', color: colors.muted, marginTop: 6, lineHeight: 21 }}>
+              {filter ? 'Prueba con otra categoría o quita el filtro.' : LIST_TABS[tabIndex].empty}
+            </Text>
+            {filter ? (
+              <Pressable onPress={() => setFilter(null)} style={{ marginTop: 14 }}>
+                <Text style={{ color: colors.primary, fontWeight: '800' }}>Quitar filtro</Text>
+              </Pressable>
+            ) : (
+              tab !== 'waiting' && (
+                <ScalePressable
+                  onPress={() => setShowNew(true)}
+                  haptic="medium"
+                  style={{ marginTop: 16, backgroundColor: colors.primary, borderRadius: 999, paddingHorizontal: 20, paddingVertical: 11 }}
+                >
+                  <Text style={{ color: '#fff', fontFamily: fonts.bold }}>💌 Hacer una pregunta</Text>
+                </ScalePressable>
+              )
+            )}
           </FadeIn>
         }
       />
 
       {/* Botón flotante (el contenedor absoluto va por fuera para que Android reciba el toque) */}
       <View style={{ position: 'absolute', right: 22, bottom: TAB_BAR_HEIGHT + Math.max(insets.bottom, 10) + 20 }}>
-        <ScalePressable onPress={() => setShowNew(true)} haptic="medium" scaleTo={0.9} style={[{ borderRadius: 32 }, shadow, { elevation: 8 }]}>
+        <ScalePressable
+          onPress={() => setShowNew(true)}
+          haptic="medium"
+          scaleTo={0.9}
+          accessibilityRole="button"
+          accessibilityLabel="Hacer una pregunta nueva"
+          style={[{ borderRadius: 32 }, shadow, { elevation: 8 }]}
+        >
           <LinearGradient colors={gradients.primary} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 62, height: 62, borderRadius: 31, alignItems: 'center', justifyContent: 'center' }}>
             <Text style={{ color: '#fff', fontSize: 32, marginTop: -3, fontWeight: '300' }}>+</Text>
           </LinearGradient>

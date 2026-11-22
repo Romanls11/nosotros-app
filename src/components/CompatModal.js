@@ -6,6 +6,7 @@ import { colors, fonts, shadow } from '../theme';
 import { friendlyError, saveTestAnswers } from '../services';
 import { compareAnswers, PACKS, packState, tier } from '../compat';
 import { FadeIn, FloatingHearts, ScalePressable, tap } from './ui';
+import { useToast } from '../toast';
 
 const G = ['#6D4BFF', '#B23CFF', '#FF3D6E'];
 
@@ -230,6 +231,7 @@ function Result({ pack, doc, uid, partnerId, names, onRetake, onBack }) {
 
 export default function CompatModal({ visible, onClose, coupleId, uid, partnerId, names, tests, onCompleted }) {
   const [view, setView] = useState({ mode: 'list', pack: null });
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   if (!visible) return null;
@@ -249,6 +251,7 @@ export default function CompatModal({ visible, onClose, coupleId, uid, partnerId
       const partnerDone = !!doc?.answers?.[partnerId];
       onCompleted?.(pack, partnerDone ? compareAnswers(pack, answers, doc.answers[partnerId]).pct : null);
       tap('success');
+      if (!partnerDone) toast(`Listo. Falta que responda ${them}`, '💯');
       setView({ mode: partnerDone ? 'result' : 'list', pack });
     } catch (e) {
       setError(friendlyError(e));

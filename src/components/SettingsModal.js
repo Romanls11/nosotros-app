@@ -9,6 +9,7 @@ import LegalModal from './LegalModal';
 import DeleteAccountModal from './DeleteAccountModal';
 import { useShowWelcome } from '../welcome';
 import { ABOUT } from '../about';
+import { useToast } from '../toast';
 
 function Row({ icon, title, subtitle, onPress, danger, right }) {
   return (
@@ -90,6 +91,7 @@ export default function SettingsModal({
   tests,
 }) {
   const [leaving, setLeaving] = useState(false);
+  const toast = useToast();
   const [showAbout, setShowAbout] = useState(false);
   const [legalDoc, setLegalDoc] = useState(null);
   const [showDelete, setShowDelete] = useState(false);
@@ -114,6 +116,7 @@ export default function SettingsModal({
             setLeaving(true);
             try {
               await leaveCouple(user.uid, coupleId);
+              toast('Te desvinculaste de la pareja', '💔', 'info');
               onClose();
             } catch (e) {
               Alert.alert('No se pudo desvincular', friendlyError(e));

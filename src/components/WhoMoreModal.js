@@ -6,6 +6,7 @@ import { colors, fonts, gradients, shadow } from '../theme';
 import { createRound, deleteRound, friendlyError, voteRound } from '../services';
 import { pickPrompt, roundState, score } from '../whoMore';
 import { FadeIn, FloatingHearts, ScalePressable, tap } from './ui';
+import { useToast } from '../toast';
 
 const initials = (n = '') =>
   n
@@ -98,6 +99,7 @@ function Result({ match }) {
 export default function WhoMoreModal({ visible, onClose, coupleId, uid, partnerId, names, games, onRoundCreated, onVoted }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const toast = useToast();
   const spin = useRef(new Animated.Value(0)).current;
   if (!visible) return null;
 
@@ -146,6 +148,7 @@ export default function WhoMoreModal({ visible, onClose, coupleId, uid, partnerI
     setBusy(true);
     try {
       await voteRound(coupleId, current.id, uid, choice);
+      if (!current.votes?.[partnerId]) toast('Voto guardado en secreto', '🤫');
       onVoted?.(current, !!current.votes?.[partnerId]);
     } catch (e) {
       setError(friendlyError(e));

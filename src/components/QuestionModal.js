@@ -19,6 +19,7 @@ import { formatDate } from './QuestionCard';
 import { FadeIn, GradientButton, tap } from './ui';
 import { Chat, ReactionBadge, ReactionBar } from './Conversation';
 import CategoryPill from './CategoryPill';
+import { useToast } from '../toast';
 import { countdownText, formatLong, isCapsule, isLocked, markCapsuleSeen, unlockDate } from '../capsule';
 
 function AnswerBox({ title, children, soft }) {
@@ -96,6 +97,7 @@ function Reveal({ children, play }) {
 
 export default function QuestionModal({ question, onClose, coupleId, uid, partnerId, names, onAnswered, onReacted, onCommented }) {
   const scrollRef = useRef(null);
+  const toast = useToast();
   const [draft, setDraft] = useState('');
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -135,6 +137,7 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
       const isFirstAnswer = !myAnswer;
       await saveAnswer(coupleId, question.id, uid, draft);
       tap('success');
+      toast(isFirstAnswer ? (locked ? 'Guardada en la cápsula' : 'Respuesta guardada') : 'Cambios guardados', isFirstAnswer && locked ? '⏳' : '✓');
       // Solo se avisa la primera vez que respondes (no en ediciones)
       if (isFirstAnswer) onAnswered?.(question, !!partnerAnswer);
       // Si tu pareja ya había respondido, ¡momento de revelar! (salvo cápsula cerrada)
@@ -155,6 +158,7 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
         style: 'destructive',
         onPress: async () => {
           await deleteQuestion(coupleId, question.id);
+          toast('Pregunta borrada', '🗑️', 'info');
           onClose();
         },
       },

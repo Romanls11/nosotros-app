@@ -94,6 +94,7 @@ Luego abre **Expo Go** en tu teléfono Android y escanea el código QR.
 | [09 · Identidad visual](docs/09-identidad.md) | Logo, paleta y tipografía |
 | [10 · Plan de mejoras](docs/10-mejoras.md) | Mejoras modernas, una por una |
 | [11 · Privacidad y legal](docs/11-privacidad.md) | Aviso, términos, consentimiento y eliminación de cuenta |
+| [12 · Ficha para portafolio](docs/12-ficha-portafolio.md) | Texto listo para presentar el proyecto |
 | [CHANGELOG](CHANGELOG.md) | Bitácora de cambios |
 
 ## 🔐 Nota sobre seguridad
@@ -112,6 +113,8 @@ Lo que **nunca** se sube es `exportar/serviceAccount.json` (clave de administrad
 - 📍 Huatusco, Veracruz, México
 - ✉️ romanls.sistemasc@gmail.com
 - 🐙 GitHub: [@Romanls11](https://github.com/Romanls11)
+- 💼 LinkedIn: [romanlunasoto](https://linkedin.com/in/romanlunasoto)
+- 🌐 Portafolio: [portafolio-isc-roman.vercel.app](https://portafolio-isc-roman.vercel.app/)
 
 ## 🔐 Privacidad
 

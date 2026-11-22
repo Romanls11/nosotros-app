@@ -15,8 +15,8 @@ export const ABOUT = {
     location: 'Huatusco, Veracruz, México',
     email: 'romanls.sistemasc@gmail.com',
     github: 'https://github.com/Romanls11',
-    linkedin: null, // ej. 'https://www.linkedin.com/in/...'
-    website: null,
+    linkedin: 'https://linkedin.com/in/romanlunasoto',
+    website: 'https://portafolio-isc-roman.vercel.app/',
   },
 
   repo: 'https://github.com/Romanls11/nosotros-app',

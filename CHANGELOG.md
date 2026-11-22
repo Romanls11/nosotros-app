@@ -13,6 +13,7 @@ Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
 ### Cambiado
 - Correo de contacto: romanls.sistemasc@gmail.com.
+- Acerca de y README: enlaces a LinkedIn y al portafolio.
 - `firestore.rules`: borrar invitación propia, y quitar el propio nombre al salir de la pareja.
 
 ## [1.2.0] - 2026-11-22

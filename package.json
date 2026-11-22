@@ -27,7 +27,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "publicar": "eas update --channel preview --environment preview"
+    "publicar": "eas update --channel preview --environment preview",
+    "legales": "node scripts/generar-legales.js"
   },
   "private": true
 }

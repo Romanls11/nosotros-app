@@ -2,6 +2,19 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [1.3.0] - 2026-11-22
+
+### Agregado
+- **🔐 Aviso de Privacidad Integral** y **📄 Términos y Condiciones** conforme a la LFPDPPP (DOF 20-03-2025). Están en la app (Ajustes → Privacidad y legal) y en `PRIVACIDAD.md` y `TERMINOS.md`, con `src/legal.js` como única fuente.
+- **Consentimiento expreso** al registrarse (mayoría de edad, términos, aviso y datos sensibles), guardado con versión y fecha. `ConsentScreen` para cuentas existentes o cuando cambie el aviso.
+- **🗑️ Eliminar mi cuenta**: borra respuestas, reacciones, mensajes, vínculo, perfil y cuenta (derecho de cancelación).
+- `npm run legales`: genera los `.md` desde la app.
+- Documentación en `docs/11-privacidad.md`.
+
+### Cambiado
+- Correo de contacto: romanls.sistemasc@gmail.com.
+- `firestore.rules`: borrar invitación propia, y quitar el propio nombre al salir de la pareja.
+
 ## [1.2.0] - 2026-11-22
 
 ### Agregado

@@ -1,5 +1,8 @@
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
@@ -14,6 +17,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   increment,
   serverTimestamp,
   setDoc,
@@ -22,6 +26,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { auth, db } from './firebase';
+import { LEGAL } from './legal';
 
 // ---------- Cuenta ----------
 
@@ -32,7 +37,59 @@ export async function register(name, email, password) {
     name: name.trim(),
     coupleId: null,
     createdAt: serverTimestamp(),
+    // Consentimiento expreso (aviso de privacidad, términos y datos sensibles)
+    privacyVersion: LEGAL.version,
+    privacyAcceptedAt: serverTimestamp(),
   });
+}
+
+/** Registra que la persona aceptó la versión vigente del Aviso de Privacidad */
+export function acceptPrivacy(uid) {
+  return setDoc(
+    doc(db, 'users', uid),
+    { privacyVersion: LEGAL.version, privacyAcceptedAt: serverTimestamp() },
+    { merge: true }
+  );
+}
+
+/**
+ * Elimina la cuenta y los datos de la persona (derecho de cancelación):
+ * respuestas, reacciones, mensajes, vínculo con la pareja, perfil y cuenta.
+ * Las preguntas que escribió se conservan sin su nombre (para no borrar respuestas de la pareja).
+ */
+export async function deleteMyAccount({ user, password, coupleId, questions = [], onStep = () => {} }) {
+  // 0) Confirmar identidad (Firebase lo exige para borrar la cuenta)
+  onStep('Verificando…');
+  await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
+
+  if (coupleId) {
+    onStep('Borrando respuestas…');
+    for (const q of questions) {
+      const ref = doc(db, 'couples', coupleId, 'questions', q.id);
+      if (q.answers?.[user.uid]) await updateDoc(ref, { [`answers.${user.uid}`]: deleteField() });
+      if (q.reactions?.[user.uid]) await updateDoc(ref, { [`reactions.${user.uid}`]: deleteField() });
+      if (q.commentCount) {
+        const snap = await getDocs(collection(ref, 'comments'));
+        for (const c of snap.docs) if (c.data().authorId === user.uid) await deleteDoc(c.ref);
+      }
+    }
+    onStep('Saliendo de la pareja…');
+    try {
+      await updateDoc(doc(db, 'couples', coupleId), {
+        members: arrayRemove(user.uid),
+        [`tokens.${user.uid}`]: deleteField(),
+        [`names.${user.uid}`]: deleteField(),
+      });
+    } catch {
+      // Si ya no era integrante, continuamos
+    }
+  }
+
+  onStep('Borrando perfil…');
+  await deleteDoc(doc(db, 'users', user.uid)).catch(() => {});
+
+  onStep('Eliminando cuenta…');
+  await deleteUser(user);
 }
 
 export function login(email, password) {
@@ -169,6 +226,8 @@ export function friendlyError(e) {
     'auth/wrong-password': 'Correo o contraseña incorrectos.',
     'auth/network-request-failed': 'Sin conexión a internet.',
     'permission-denied': 'No tienes permiso para hacer eso (revisa las reglas de Firestore).',
+    'auth/requires-recent-login': 'Por seguridad, cierra sesión, vuelve a entrar e inténtalo de nuevo.',
+    'auth/wrong-password': 'La contraseña no es correcta.',
   };
   return map[e?.code] || e?.message || 'Ocurrió un error.';
 }

@@ -13,7 +13,7 @@ export const ABOUT = {
       { icon: '🎓', title: 'Instructor de informática', place: 'BEONE' },
     ],
     location: 'Huatusco, Veracruz, México',
-    email: 'romanlunasoto27@gmail.com',
+    email: 'romanls.sistemasc@gmail.com',
     github: 'https://github.com/Romanls11',
     linkedin: null, // ej. 'https://www.linkedin.com/in/...'
     website: null,

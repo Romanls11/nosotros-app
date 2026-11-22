@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts, gradients, shadow, ui } from '../theme';
 import { friendlyError, login, register, resetPassword } from '../services';
 import { FadeIn, FloatingHearts, GradientButton, PasswordInput, Pulse, tap } from '../components/ui';
+import ConsentCheck from '../components/ConsentCheck';
 
 export default function AuthScreen() {
   const [mode, setMode] = useState('login'); // 'login' | 'register'
@@ -24,6 +25,7 @@ export default function AuthScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
+  const [consent, setConsent] = useState(false);
   const shake = useRef(new Animated.Value(0)).current;
 
   const isRegister = mode === 'register';
@@ -53,6 +55,7 @@ export default function AuthScreen() {
     setError('');
     if (isRegister && !name.trim()) return showError('Escribe tu nombre.');
     if (!email.trim() || !password) return showError('Escribe tu correo y contraseña.');
+    if (isRegister && !consent) return showError('Para crear tu cuenta acepta los términos y el aviso de privacidad.');
     setLoading(true);
     try {
       if (isRegister) await register(name, email, password);
@@ -158,6 +161,8 @@ export default function AuthScreen() {
                   placeholder="Contraseña (mín. 6 caracteres)"
                   onSubmitEditing={submit}
                 />
+
+                {isRegister && <ConsentCheck checked={consent} onChange={setConsent} />}
 
                 {!isRegister && (
                   <Pressable onPress={forgot} hitSlop={8} style={{ alignSelf: 'flex-end', marginTop: 10 }}>

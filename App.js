@@ -17,6 +17,8 @@ import AuthScreen from './src/screens/AuthScreen';
 import PairScreen from './src/screens/PairScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
+import ConsentScreen from './src/screens/ConsentScreen';
+import { LEGAL } from './src/legal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { WelcomeContext } from './src/welcome';
 
@@ -77,6 +79,8 @@ export default function App() {
     content = <WelcomeScreen onDone={finishWelcome} />;
   } else if (!user) {
     content = <AuthScreen />;
+  } else if (profile?.privacyVersion !== LEGAL.version) {
+    content = <ConsentScreen user={user} isUpdate={!!profile?.privacyVersion} />;
   } else if (!profile?.coupleId) {
     content = <PairScreen user={user} name={profile?.name || user.displayName || 'Tú'} />;
   } else {

@@ -5,6 +5,8 @@ import { friendlyError, leaveCouple, logout, resetPassword } from '../services';
 import { FadeIn, ScalePressable, tap } from './ui';
 import { useTheme } from '../themeContext';
 import AboutModal from './AboutModal';
+import LegalModal from './LegalModal';
+import DeleteAccountModal from './DeleteAccountModal';
 import { useShowWelcome } from '../welcome';
 import { ABOUT } from '../about';
 
@@ -83,9 +85,12 @@ export default function SettingsModal({
   push,
   onCheckPush,
   onExport,
+  questions,
 }) {
   const [leaving, setLeaving] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [legalDoc, setLegalDoc] = useState(null);
+  const [showDelete, setShowDelete] = useState(false);
   const showWelcome = useShowWelcome();
   const names = couple?.names || {};
   const myName = names[user.uid] || user.displayName || 'Tú';
@@ -196,6 +201,20 @@ export default function SettingsModal({
             />
           </Section>
 
+          <Section title="Privacidad y legal" delay={270}>
+            <Row icon="🔐" title="Aviso de privacidad" subtitle="Qué datos usamos y tus derechos ARCO" onPress={() => setLegalDoc('privacy')} />
+            <Divider />
+            <Row icon="📄" title="Términos y condiciones" onPress={() => setLegalDoc('terms')} />
+            <Divider />
+            <Row
+              icon="🗑️"
+              title="Eliminar mi cuenta"
+              subtitle="Borra tu cuenta y tus datos de forma permanente"
+              danger
+              onPress={() => setShowDelete(true)}
+            />
+          </Section>
+
           <Section title="Información" delay={300}>
             <Row icon="👋" title="Ver bienvenida" subtitle="Repasar cómo funciona la app" onPress={() => { onClose(); showWelcome(); }} />
             <Divider />
@@ -204,6 +223,14 @@ export default function SettingsModal({
 
           <Text style={{ textAlign: 'center', color: colors.muted, marginTop: 28, fontSize: 12 }}>nosotros · v{ABOUT.version}</Text>
           <AboutModal visible={showAbout} onClose={() => setShowAbout(false)} />
+          <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />
+          <DeleteAccountModal
+            visible={showDelete}
+            onClose={() => setShowDelete(false)}
+            user={user}
+            coupleId={coupleId}
+            questions={questions}
+          />
         </ScrollView>
       </View>
     </Modal>

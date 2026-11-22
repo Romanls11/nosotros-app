@@ -93,6 +93,7 @@ Luego abre **Expo Go** en tu teléfono Android y escanea el código QR.
 | [08 · Compilar local](docs/08-compilar-local.md) | Generar el APK en tu PC sin esperar la fila |
 | [09 · Identidad visual](docs/09-identidad.md) | Logo, paleta y tipografía |
 | [10 · Plan de mejoras](docs/10-mejoras.md) | Mejoras modernas, una por una |
+| [11 · Privacidad y legal](docs/11-privacidad.md) | Aviso, términos, consentimiento y eliminación de cuenta |
 | [CHANGELOG](CHANGELOG.md) | Bitácora de cambios |
 
 ## 🔐 Nota sobre seguridad
@@ -109,8 +110,15 @@ Lo que **nunca** se sube es `exportar/serviceAccount.json` (clave de administrad
 - 💻 Desarrollador en Genio Inventivo SAPI de CV
 - 🎓 Instructor de informática en BEONE
 - 📍 Huatusco, Veracruz, México
-- ✉️ romanlunasoto27@gmail.com
+- ✉️ romanls.sistemasc@gmail.com
 - 🐙 GitHub: [@Romanls11](https://github.com/Romanls11)
+
+## 🔐 Privacidad
+
+- [Aviso de Privacidad](PRIVACIDAD.md)
+- [Términos y Condiciones](TERMINOS.md)
+
+Sin publicidad, sin rastreo y sin venta de datos. Cada quien puede eliminar su cuenta desde la app.
 
 ## 📄 Licencia
 

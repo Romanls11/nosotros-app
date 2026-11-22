@@ -28,6 +28,7 @@ service cloud.firestore {
     match /invites/{code} {
       allow get: if signedIn();
       allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow delete: if signedIn() && resource.data.createdBy == request.auth.uid;
     }
 
     match /couples/{coupleId} {
@@ -49,12 +50,13 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['tokens'])
         && onlyMyKey('tokens');
 
-      // Desvincularse: un integrante se quita a sí mismo (y borra su token)
+      // Desvincularse / eliminar cuenta: un integrante se quita a sí mismo (y borra su token y su nombre)
       allow update: if signedIn()
         && request.auth.uid in resource.data.members
         && request.resource.data.members == resource.data.members.removeAll([request.auth.uid])
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'tokens'])
-        && onlyMyKey('tokens');
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'tokens', 'names'])
+        && onlyMyKey('tokens')
+        && onlyMyKey('names');
 
       match /questions/{questionId} {
         allow read: if isMember(coupleId);

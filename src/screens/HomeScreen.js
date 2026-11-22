@@ -496,6 +496,7 @@ export default function HomeScreen({ user, coupleId }) {
         push={push}
         onCheckPush={checkPush}
         onExport={exportSql}
+        questions={questions}
       />
     </View>
   );

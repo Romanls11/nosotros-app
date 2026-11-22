@@ -2,6 +2,18 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [1.6.0] - 2026-11-22
+
+### Cambiado: nueva navegación
+- **🧭 Barra inferior flotante** (`src/components/TabBar.js`), con indicador en degradado que se desliza, número de pendientes en *Preguntas* y *Juegos* y punto de aviso en *Hoy* y *Nosotros*:
+  - **🏠 Hoy:** saludo según la hora ("Buenos días, Román ☀️"), racha, sección **"Te toca"** con lo pendiente (pregunta del día, preguntas por responder, ronda por votar, test por responder) o "¡Estás al día!", pregunta del día y recuerdo.
+  - **💬 Preguntas:** contadores, pestañas, filtros, lista deslizable y botón +.
+  - **🎮 Juegos:** quién es más probable y test de compatibilidad.
+  - **💞 Nosotros:** avatares de los dos, días juntos, resumen de *Nuestro mapa* (complicidad, racha, sintonía y compatibilidad), Ajustes, hacer una pregunta y exportar.
+- Animación suave al cambiar de pestaña.
+- El botón **atrás de Android** regresa a *Hoy* antes de salir de la app.
+- `HomeScreen.js` reorganizado por pestañas (los datos y las ventanas siguen en un solo lugar).
+
 ## [1.5.0] - 2026-11-22
 
 ### Agregado

@@ -55,7 +55,7 @@ export default function NewQuestionModal({ visible, onClose, coupleId, uid, onCr
   return (
     <Modal visible={visible} animationType="slide" transparent statusBarTranslucent onRequestClose={close}>
       <KeyboardAvoidingView
-        style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(43,34,48,0.45)' }}
+        style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: colors.overlay }}
         behavior="padding"
       >
         <Pressable style={{ flex: 1 }} onPress={close} />

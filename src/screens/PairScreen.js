@@ -45,7 +45,7 @@ export default function PairScreen({ user, name }) {
     }
   }
 
-  const card = [{ backgroundColor: '#fff', borderRadius: 22, padding: 20 }, shadow];
+  const card = [{ backgroundColor: colors.card, borderRadius: 22, padding: 20 }, shadow];
 
   return (
     <LinearGradient colors={gradients.soft} style={{ flex: 1 }}>

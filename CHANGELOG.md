@@ -2,6 +2,16 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [0.5.0] - 2026-11-22
+
+### Agregado
+- **🌙 Modo oscuro** con paleta "noche ciruela". Se elige en **Ajustes → Apariencia** (Sistema, Claro u Oscuro).
+- `src/themeContext.js` (preferencia guardada) y `applyScheme()` en `src/theme.js`.
+
+### Cambiado
+- Fondos que estaban fijos en blanco ahora usan `colors.card`.
+- `app.json`: `userInterfaceStyle: automatic` y dependencia `expo-system-ui`. "Sistema" requiere el próximo APK.
+
 ## [0.4.0] - 2026-11-21
 
 ### Agregado

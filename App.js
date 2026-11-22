@@ -12,11 +12,13 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from './src/firebase';
 import { colors } from './src/theme';
+import { ThemeContext, useAppTheme } from './src/themeContext';
 import AuthScreen from './src/screens/AuthScreen';
 import PairScreen from './src/screens/PairScreen';
 import HomeScreen from './src/screens/HomeScreen';
 
 export default function App() {
+  const theme = useAppTheme(); // claro / oscuro (debe ir primero: actualiza los colores)
   const [user, setUser] = useState(undefined); // undefined = cargando
   const [profile, setProfile] = useState(undefined);
   const [fontsLoaded] = useFonts({
@@ -65,9 +67,13 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider>
-      <StatusBar style="dark" />
-      {content}
-    </SafeAreaProvider>
+    <ThemeContext.Provider value={theme}>
+      <SafeAreaProvider>
+        <StatusBar style={theme.scheme === 'dark' ? 'light' : 'dark'} />
+        <View style={{ flex: 1, backgroundColor: colors.bg }}>
+          {content}
+        </View>
+      </SafeAreaProvider>
+    </ThemeContext.Provider>
   );
 }

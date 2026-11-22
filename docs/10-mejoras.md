@@ -5,7 +5,7 @@ Se implementan **una por una**. Cada una se publica con `npm run publicar`, salv
 | # | Mejora | Estado | Versión |
 |---|---|---|---|
 | 1 | ☀️ **Pregunta del día** + racha 🔥 | ✅ Hecha | 0.4.0 |
-| 2 | 🌙 Modo oscuro (paleta ciruela) | Pendiente | — |
+| 2 | 🌙 Modo oscuro (paleta ciruela) | ✅ Hecha | 0.5.0 |
 | 3 | 👆 Deslizar tarjetas para responder o posponer | Pendiente | — |
 | 4 | 😍 Reacciones y mini chat por pregunta | Pendiente | — |
 | 5 | 📊 "Nuestro mapa": estadísticas visuales | Pendiente | — |
@@ -20,3 +20,10 @@ Se implementan **una por una**. Cada una se publica con `npm run publicar`, salv
 - Tarjeta con degradado arriba de la lista (`src/components/DailyCard.js`), con estado ("te toca", "esperando", "¡toca para ver!").
 - Las preguntas del día no se pueden borrar y aparecen con la etiqueta ☀️ en las pestañas.
 - No requiere cambios en las reglas: usa la regla de crear pregunta que ya existe.
+
+## 2. Modo oscuro
+- **⚙️ Ajustes → Apariencia:** 📱 Sistema · ☀️ Claro · 🌙 Oscuro. La elección se guarda en el teléfono (`AsyncStorage`).
+- **Paleta "noche ciruela":** fondo `#140C22`, tarjetas `#221638` y texto `#F6F0FF`, con los mismos acentos de la marca (rosa, violeta, sol).
+- **Cómo funciona:** `src/theme.js` tiene dos paletas (`LIGHT` y `DARK`) y `applyScheme()` actualiza `colors`, `gradients`, `shadow` y `ui` en su lugar. `src/themeContext.js` decide el tema y la app se vuelve a dibujar sin perder la pantalla en la que estás.
+- La barra de estado cambia a texto claro en modo oscuro.
+- **"Sistema"** sigue el modo del teléfono **a partir del próximo APK** (`userInterfaceStyle: automatic` + `expo-system-ui`). Claro y Oscuro funcionan desde ya con `npm run publicar`.

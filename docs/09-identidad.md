@@ -17,6 +17,16 @@ Archivo fuente del logo: [`assets/logo.svg`](../assets/logo.svg).
 
 **Degradado de la marca:** coral → rosa → violeta, en diagonal (de arriba a la izquierda hacia abajo a la derecha).
 
+### Modo oscuro ("noche ciruela")
+| Nombre | Hex |
+|---|---|
+| Fondo | `#140C22` |
+| Tarjetas | `#221638` |
+| Texto | `#F6F0FF` |
+| Bordes | `#33254D` |
+
+Los acentos (rosa, violeta y sol) y el degradado de la marca se mantienen.
+
 ## Tipografía
 - **Bricolage Grotesque**: títulos, números y botones (`@expo-google-fonts/bricolage-grotesque`).
 - **Fuente del sistema**: textos largos y respuestas.

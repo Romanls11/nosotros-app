@@ -14,6 +14,7 @@ import SettingsModal from '../components/SettingsModal';
 import DailyCard from '../components/DailyCard';
 import { dailyQuestionFor, dailyStreak, todayKey } from '../daily';
 import { ensureDailyQuestion } from '../services';
+import { useTheme } from '../themeContext';
 import { FadeIn, GradientHeader, ScalePressable, tap } from '../components/ui';
 
 const TABS = [
@@ -23,6 +24,7 @@ const TABS = [
 ];
 
 export default function HomeScreen({ user, coupleId }) {
+  const { scheme } = useTheme(); // para volver a dibujar al cambiar de tema
   const [couple, setCouple] = useState(null);
   const [questions, setQuestions] = useState(null);
   const [tab, setTab] = useState('pending');
@@ -195,7 +197,7 @@ export default function HomeScreen({ user, coupleId }) {
       {/* Aviso con código si la pareja aún no se une */}
       {!partnerId && (
         <FadeIn delay={200}>
-          <View style={[{ margin: 20, marginBottom: 0, padding: 18, borderRadius: 20, backgroundColor: '#fff' }, shadow]}>
+          <View style={[{ margin: 20, marginBottom: 0, padding: 18, borderRadius: 20, backgroundColor: colors.card }, shadow]}>
             <Text style={{ color: colors.primaryDark, fontWeight: '800' }}>Comparte este código con tu pareja:</Text>
             <Text style={{ fontSize: 32, fontWeight: '800', letterSpacing: 8, color: colors.text, marginTop: 6 }}>
               {couple.inviteCode}
@@ -215,7 +217,7 @@ export default function HomeScreen({ user, coupleId }) {
       <View
         onLayout={(e) => setTabsWidth(e.nativeEvent.layout.width - 8)}
         style={[
-          { flexDirection: 'row', marginHorizontal: 20, marginTop: 18, backgroundColor: '#fff', borderRadius: 16, padding: 4 },
+          { flexDirection: 'row', marginHorizontal: 20, marginTop: 18, backgroundColor: colors.card, borderRadius: 16, padding: 4 },
           shadow,
         ]}
       >
@@ -260,6 +262,7 @@ export default function HomeScreen({ user, coupleId }) {
       <FlatList
         key={tab}
         data={grouped[tab]}
+        extraData={scheme}
         keyExtractor={(q) => q.id}
         contentContainerStyle={{ padding: 20, paddingBottom: 130 }}
         ListHeaderComponent={

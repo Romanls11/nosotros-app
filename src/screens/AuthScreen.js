@@ -96,7 +96,7 @@ export default function AuthScreen() {
                 style={[
                   {
                     marginTop: 28,
-                    backgroundColor: 'rgba(255,255,255,0.92)',
+                    backgroundColor: colors.card,
                     borderRadius: 24,
                     padding: 20,
                     transform: [{ translateX: shake }],
@@ -123,7 +123,7 @@ export default function AuthScreen() {
                         paddingVertical: 10,
                         borderRadius: 11,
                         alignItems: 'center',
-                        backgroundColor: mode === o.k ? '#fff' : 'transparent',
+                        backgroundColor: mode === o.k ? colors.card : 'transparent',
                       }}
                     >
                       <Text style={{ fontFamily: fonts.bold, color: mode === o.k ? colors.primary : colors.muted }}>{o.t}</Text>

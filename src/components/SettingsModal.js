@@ -3,6 +3,7 @@ import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, Share, Text, Vi
 import { colors, shadow, ui } from '../theme';
 import { friendlyError, leaveCouple, logout, resetPassword } from '../services';
 import { FadeIn, ScalePressable, tap } from './ui';
+import { useTheme } from '../themeContext';
 
 function Row({ icon, title, subtitle, onPress, danger, right }) {
   return (
@@ -27,8 +28,43 @@ function Section({ title, children, delay }) {
       <Text style={{ fontSize: 12, fontWeight: '800', color: colors.muted, letterSpacing: 1, marginLeft: 6, marginBottom: 8 }}>
         {title.toUpperCase()}
       </Text>
-      <View style={[{ backgroundColor: '#fff', borderRadius: 20, overflow: 'hidden' }, shadow]}>{children}</View>
+      <View style={[{ backgroundColor: colors.card, borderRadius: 20, overflow: 'hidden' }, shadow]}>{children}</View>
     </FadeIn>
+  );
+}
+
+function AppearancePicker() {
+  const { pref, setPref } = useTheme();
+  const options = [
+    { k: 'system', icon: '📱', t: 'Sistema' },
+    { k: 'light', icon: '☀️', t: 'Claro' },
+    { k: 'dark', icon: '🌙', t: 'Oscuro' },
+  ];
+  return (
+    <View style={{ flexDirection: 'row', padding: 8 }}>
+      {options.map((o) => {
+        const active = pref === o.k;
+        return (
+          <ScalePressable
+            key={o.k}
+            onPress={() => setPref(o.k)}
+            style={{
+              flex: 1,
+              marginHorizontal: 4,
+              paddingVertical: 12,
+              borderRadius: 14,
+              alignItems: 'center',
+              backgroundColor: active ? colors.primarySoft : 'transparent',
+              borderWidth: 1.5,
+              borderColor: active ? colors.primary : colors.border,
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>{o.icon}</Text>
+            <Text style={{ marginTop: 4, fontWeight: '700', color: active ? colors.primary : colors.muted }}>{o.t}</Text>
+          </ScalePressable>
+        );
+      })}
+    </View>
   );
 }
 
@@ -109,6 +145,10 @@ export default function SettingsModal({
               subtitle={push?.ok ? 'Toca para revisar el estado de los dos' : 'Toca para intentar activarlas y ver el motivo'}
               onPress={onCheckPush}
             />
+          </Section>
+
+          <Section title="Apariencia" delay={150}>
+            <AppearancePicker />
           </Section>
 
           <Section title="Datos" delay={180}>

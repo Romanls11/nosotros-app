@@ -3,6 +3,7 @@ import { colors, fonts, shadow } from '../theme';
 import { FadeIn, ScalePressable } from './ui';
 import SwipeRow from './SwipeRow';
 import CategoryPill from './CategoryPill';
+import { ReactionStack } from './Reactions';
 import { countdownText, isCapsule, isLocked } from '../capsule';
 
 function Chip({ label, ok }) {
@@ -89,9 +90,7 @@ export default function QuestionCard({ question, uid, partnerId, names, onPress,
           <Chip label="Tú" ok={mine} />
           {partnerId && <Chip label={names[partnerId] || 'Pareja'} ok={theirs} />}
           <View style={{ flex: 1 }} />
-          {Object.values(question.reactions || {}).map((e, i) => (
-            <Text key={i} style={{ fontSize: 16, marginLeft: 2 }}>{e}</Text>
-          ))}
+          <ReactionStack reactions={question.reactions} />
           {!!question.commentCount && (
             <Text style={{ marginLeft: 8, color: colors.muted, fontWeight: '700', fontSize: 13 }}>💬 {question.commentCount}</Text>
           )}

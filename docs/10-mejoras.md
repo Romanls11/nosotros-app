@@ -91,3 +91,5 @@ Se abre con el botón **📊** del encabezado (cuando ya hay pareja). Todo se ca
 | 👨‍💻 Acerca de | Ajustes → Información. Los datos se editan en `src/about.js`. Tocar el logo 5 veces tiene sorpresa 🥚 |
 | 👋 Bienvenida | Primera vez que se abre la app (`nosotros.bienvenida` en `AsyncStorage`). Se puede repetir desde Ajustes |
 | 📅 Un día como hoy | Busca preguntas creadas hace 1 año, 6 meses, 3 meses, 1 mes o 1 semana (prefiere la más antigua), que los dos respondieron y que no sean cápsulas cerradas |
+| 🎲 ¿Quién es más probable que…? | v1.4. Tarjeta en la pantalla principal → juego con voto secreto, revelado, marcador de sintonía e historial. Datos en `couples/{id}/games/{gameId}` = `{ prompt, createdBy, createdAt, votes: { uid: uidElegido } }` |
+| 😍 Reacciones 2.0 | v1.4. Bandeja flotante con nombres de reacción, chip de la reacción elegida e insignia con balanceo. La bandeja va en el flujo normal y no en posición absoluta, porque Android ignora toques fuera del contenedor |

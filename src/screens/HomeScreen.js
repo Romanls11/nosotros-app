@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Animated, FlatList, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { collection, doc, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebase';
 import { buildSql } from '../exportSql';
 import { preview, registerForPush, sendPush } from '../notifications';
@@ -14,6 +14,8 @@ import SettingsModal from '../components/SettingsModal';
 import DailyCard from '../components/DailyCard';
 import StatsModal from '../components/StatsModal';
 import MemoryCard from '../components/MemoryCard';
+import WhoMoreCard from '../components/WhoMoreCard';
+import WhoMoreModal from '../components/WhoMoreModal';
 import { findMemory } from '../memories';
 import { CATEGORIES, soft } from '../categories';
 import { isLocked, scheduleCapsuleReminders } from '../capsule';
@@ -37,6 +39,8 @@ export default function HomeScreen({ user, coupleId }) {
   const [showNew, setShowNew] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showGame, setShowGame] = useState(false);
+  const [games, setGames] = useState([]);
   const [filter, setFilter] = useState(null); // categoría seleccionada
   const [openId, setOpenId] = useState(null);
 
@@ -60,6 +64,16 @@ export default function HomeScreen({ user, coupleId }) {
       q,
       (snap) => setQuestions(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
       retryLater
+    );
+  }, [coupleId, retry]);
+
+  // 🎲 Rondas del juego (la más reciente primero)
+  useEffect(() => {
+    const q = query(collection(db, 'couples', coupleId, 'games'), orderBy('createdAt', 'desc'), limit(40));
+    return onSnapshot(
+      q,
+      (snap) => setGames(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      () => setGames([])
     );
   }, [coupleId, retry]);
 
@@ -111,6 +125,14 @@ export default function HomeScreen({ user, coupleId }) {
   }
   function notifyComment(question, text) {
     sendPush(partnerToken, `💬 ${myName}`, `${preview(text, 80)} · ${preview(question.text, 40)}`);
+  }
+
+  function notifyRound(prompt) {
+    sendPush(partnerToken, '🎲 Nueva ronda', `¿Quién es más probable que ${prompt}?`);
+  }
+  function notifyVote(game, partnerAlreadyVoted) {
+    if (partnerAlreadyVoted) sendPush(partnerToken, '🎲 ¡Resultado listo!', `¿Coincidieron? …${game.prompt}`);
+    else sendPush(partnerToken, `🎲 ${myName} ya votó`, `Te toca: ¿quién es más probable que ${game.prompt}?`);
   }
 
   function exportSql() {
@@ -345,6 +367,13 @@ export default function HomeScreen({ user, coupleId }) {
               streak={streak}
               onPress={openDaily}
             />
+            <WhoMoreCard
+              games={games}
+              uid={user.uid}
+              partnerId={partnerId}
+              partnerName={partnerName}
+              onPress={() => setShowGame(true)}
+            />
             <MemoryCard
               memory={memory}
               uid={user.uid}
@@ -477,6 +506,18 @@ export default function HomeScreen({ user, coupleId }) {
         onCommented={notifyComment}
       />
 
+      <WhoMoreModal
+        visible={showGame}
+        onClose={() => setShowGame(false)}
+        coupleId={coupleId}
+        uid={user.uid}
+        partnerId={partnerId}
+        names={names}
+        games={games}
+        onRoundCreated={notifyRound}
+        onVoted={notifyVote}
+      />
+
       <StatsModal
         visible={showStats}
         onClose={() => setShowStats(false)}
@@ -497,6 +538,7 @@ export default function HomeScreen({ user, coupleId }) {
         onCheckPush={checkPush}
         onExport={exportSql}
         questions={questions}
+        games={games}
       />
     </View>
   );

@@ -20,6 +20,7 @@ Hecha con **Expo (React Native)** y **Firebase** en su plan gratuito: sin servid
 - ⚡ **Tiempo real:** los cambios aparecen al instante en los dos teléfonos.
 - ☀️ **Pregunta del día** con racha 🔥 de días seguidos.
 - 😍 **Reacciones** y 💬 **mini chat** en cada pregunta.
+- 🎲 **¿Quién es más probable que…?**: voten en secreto y descubran si coinciden.
 - 🏷️ **Categorías** con color y filtro.
 - ⏳ **Cápsula del tiempo**: respuestas que se abren en una fecha especial.
 - 📊 **Nuestro mapa**: estadísticas de la pareja.

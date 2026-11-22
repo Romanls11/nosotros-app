@@ -2,6 +2,20 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [1.4.0] - 2026-11-22
+
+### Agregado
+- **🎲 ¿Quién es más probable que…?** (`src/whoMore.js`, `WhoMoreCard` y `WhoMoreModal`): 45 situaciones, voto secreto con avatares, revelado animado (¡Coincidieron! 💞 / ¡No coincidieron! 😅), marcador de sintonía, historial de rondas, "Otra situación" y notificaciones. Se guarda en `couples/{id}/games`.
+- Reglas para `games`: cada quien solo vota por sí mismo y solo por uno de los dos integrantes.
+
+### Cambiado
+- **😍 Reacciones rediseñadas** (`src/components/Reactions.js`):
+  - Botón "Reaccionar" que abre una bandeja flotante con emojis que entran escalonados y se agrandan al presionarlos, con su nombre ("Me encanta", "Me hace reír"…).
+  - Tu reacción aparece como un chip con su nombre.
+  - La insignia en tu respuesta muestra el nombre de tu pareja y la reacción, con un pequeño balanceo.
+  - Las tarjetas muestran las reacciones como círculos encimados.
+- Eliminar cuenta también borra tus votos del juego.
+
 ## [1.3.0] - 2026-11-22
 
 ### Agregado

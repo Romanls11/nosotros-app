@@ -3,90 +3,12 @@ import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Pressable, Text, TextInput, View } from 'react-native';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebase';
-import { addComment, friendlyError, setReaction } from '../services';
+import { addComment, friendlyError } from '../services';
 import { colors, fonts, shadow } from '../theme';
 import { FadeIn, ScalePressable, tap } from './ui';
 
-export const REACTIONS = ['❤️', '😂', '🥹', '😮', '🔥', '🙏'];
-
-/** Barra para reaccionar a la respuesta de tu pareja */
-export function ReactionBar({ coupleId, question, uid, onReacted }) {
-  const mine = question.reactions?.[uid] || null;
-  const pop = useRef(new Animated.Value(1)).current;
-
-  async function react(emoji) {
-    const next = mine === emoji ? null : emoji; // tocar la misma la quita
-    tap(next ? 'success' : 'light');
-    pop.setValue(0.6);
-    Animated.spring(pop, { toValue: 1, useNativeDriver: true, friction: 4 }).start();
-    try {
-      await setReaction(coupleId, question.id, uid, next);
-      if (next) onReacted?.(question, next);
-    } catch {}
-  }
-
-  return (
-    <View style={{ flexDirection: 'row', marginTop: 14, flexWrap: 'wrap' }}>
-      {REACTIONS.map((e) => {
-        const active = mine === e;
-        return (
-          <Pressable
-            key={e}
-            onPress={() => react(e)}
-            hitSlop={4}
-            style={{
-              marginRight: 8,
-              marginTop: 4,
-              width: 42,
-              height: 42,
-              borderRadius: 21,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: active ? colors.card : 'rgba(255,255,255,0.35)',
-              borderWidth: active ? 2 : 0,
-              borderColor: colors.primary,
-            }}
-          >
-            <Animated.Text style={{ fontSize: 20, transform: [{ scale: active ? pop : 1 }] }}>{e}</Animated.Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
-
-/** Insignia con la reacción que tu pareja le puso a TU respuesta */
-export function ReactionBadge({ emoji, name }) {
-  const v = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (!emoji) return;
-    v.setValue(0);
-    Animated.spring(v, { toValue: 1, useNativeDriver: true, friction: 5 }).start();
-  }, [emoji]);
-  if (!emoji) return null;
-  return (
-    <Animated.View
-      style={[
-        {
-          position: 'absolute',
-          right: 14,
-          top: -14,
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: colors.card,
-          borderRadius: 999,
-          paddingHorizontal: 10,
-          paddingVertical: 4,
-          transform: [{ scale: v }],
-        },
-        shadow,
-      ]}
-    >
-      <Text style={{ fontSize: 18 }}>{emoji}</Text>
-      <Text style={{ fontSize: 11, color: colors.muted, marginLeft: 4, fontWeight: '700' }}>{name}</Text>
-    </Animated.View>
-  );
-}
+// Las reacciones viven en ./Reactions (se re-exportan para no romper imports)
+export { REACTIONS, ReactionBar, ReactionBadge } from './Reactions';
 
 function hora(ts) {
   if (!ts?.toDate) return '';

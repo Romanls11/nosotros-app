@@ -58,6 +58,23 @@ service cloud.firestore {
         && onlyMyKey('tokens')
         && onlyMyKey('names');
 
+      // 🎲 ¿Quién es más probable que…?
+      match /games/{gameId} {
+        allow read: if isMember(coupleId);
+        allow create: if isMember(coupleId)
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.prompt is string
+          && request.resource.data.votes == {};
+        // Cada quien solo pone/quita SU voto, y solo puede votar por uno de los dos integrantes
+        allow update: if isMember(coupleId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes'])
+          && onlyMyKey('votes')
+          && (!(request.auth.uid in request.resource.data.votes)
+              || request.resource.data.votes[request.auth.uid] in get(/databases/$(database)/documents/couples/$(coupleId)).data.members);
+        // Cambiar la pregunta: solo quien la creó y si nadie ha votado
+        allow delete: if isMember(coupleId) && resource.data.createdBy == request.auth.uid && resource.data.votes.size() == 0;
+      }
+
       match /questions/{questionId} {
         allow read: if isMember(coupleId);
 

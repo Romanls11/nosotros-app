@@ -57,7 +57,7 @@ export function acceptPrivacy(uid) {
  * respuestas, reacciones, mensajes, vínculo con la pareja, perfil y cuenta.
  * Las preguntas que escribió se conservan sin su nombre (para no borrar respuestas de la pareja).
  */
-export async function deleteMyAccount({ user, password, coupleId, questions = [], onStep = () => {} }) {
+export async function deleteMyAccount({ user, password, coupleId, questions = [], games = [], onStep = () => {} }) {
   // 0) Confirmar identidad (Firebase lo exige para borrar la cuenta)
   onStep('Verificando…');
   await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
@@ -71,6 +71,11 @@ export async function deleteMyAccount({ user, password, coupleId, questions = []
       if (q.commentCount) {
         const snap = await getDocs(collection(ref, 'comments'));
         for (const c of snap.docs) if (c.data().authorId === user.uid) await deleteDoc(c.ref);
+      }
+    }
+    for (const g of games) {
+      if (g.votes?.[user.uid]) {
+        await updateDoc(doc(db, 'couples', coupleId, 'games', g.id), { [`votes.${user.uid}`]: deleteField() });
       }
     }
     onStep('Saliendo de la pareja…');
@@ -207,6 +212,26 @@ export async function addComment(coupleId, questionId, uid, text) {
   batch.set(doc(collection(qRef, 'comments')), { text: text.trim(), authorId: uid, createdAt: serverTimestamp() });
   batch.update(qRef, { commentCount: increment(1), lastCommentAt: serverTimestamp() });
   await batch.commit();
+}
+
+// ---------- 🎲 ¿Quién es más probable que…? ----------
+
+export function createRound(coupleId, uid, prompt) {
+  return addDoc(collection(db, 'couples', coupleId, 'games'), {
+    prompt,
+    createdBy: uid,
+    createdAt: serverTimestamp(),
+    votes: {},
+  });
+}
+
+/** Votar por quién es más probable (choiceUid = uid de uno de los dos) */
+export function voteRound(coupleId, gameId, uid, choiceUid) {
+  return updateDoc(doc(db, 'couples', coupleId, 'games', gameId), { [`votes.${uid}`]: choiceUid });
+}
+
+export function deleteRound(coupleId, gameId) {
+  return deleteDoc(doc(db, 'couples', coupleId, 'games', gameId));
 }
 
 export function deleteQuestion(coupleId, questionId) {

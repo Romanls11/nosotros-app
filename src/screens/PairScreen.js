@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, gradients, shadow, ui } from '../theme';
+import { colors, fonts, gradients, shadow, ui } from '../theme';
 import { createCouple, friendlyError, joinCouple, logout } from '../services';
 import { FadeIn, FloatingHearts, GradientButton, ScalePressable, tap } from '../components/ui';
 
@@ -51,7 +51,8 @@ export default function PairScreen({ user, name }) {
     <LinearGradient colors={gradients.soft} style={{ flex: 1 }}>
       <FloatingHearts count={5} />
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ padding: 24, flex: 1, justifyContent: 'center' }}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}>
+        <ScrollView contentContainerStyle={{ padding: 24, flexGrow: 1, justifyContent: 'center' }} keyboardShouldPersistTaps="handled">
           <FadeIn>
             <Text style={ui.title}>Hola, {name} 👋</Text>
             <Text style={ui.subtitle}>
@@ -62,7 +63,7 @@ export default function PairScreen({ user, name }) {
           <FadeIn delay={120} style={{ marginTop: 26 }}>
             <View style={card}>
               <Text style={{ fontSize: 28 }}>✨</Text>
-              <Text style={{ fontWeight: '800', fontSize: 17, color: colors.text, marginTop: 6 }}>Soy el primero</Text>
+              <Text style={{ fontFamily: fonts.bold, fontSize: 18, color: colors.text, marginTop: 6 }}>Soy el primero</Text>
               <Text style={[ui.subtitle, { marginTop: 4 }]}>Crea la pareja y comparte el código.</Text>
               <GradientButton title="Crear pareja" onPress={onCreate} loading={loading === 'create'} disabled={!!loading} />
             </View>
@@ -71,7 +72,7 @@ export default function PairScreen({ user, name }) {
           <FadeIn delay={240} style={{ marginTop: 16 }}>
             <View style={card}>
               <Text style={{ fontSize: 28 }}>🔑</Text>
-              <Text style={{ fontWeight: '800', fontSize: 17, color: colors.text, marginTop: 6 }}>Ya tengo un código</Text>
+              <Text style={{ fontFamily: fonts.bold, fontSize: 18, color: colors.text, marginTop: 6 }}>Ya tengo un código</Text>
               <TextInput
                 style={[ui.input, { letterSpacing: 6, fontWeight: '800', fontSize: 22, textAlign: 'center' }]}
                 placeholder="ABC123"
@@ -93,7 +94,8 @@ export default function PairScreen({ user, name }) {
           <Pressable onPress={logout}>
             <Text style={[ui.link, { color: colors.muted }]}>Cerrar sesión</Text>
           </Pressable>
-        </View>
+        </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </LinearGradient>
   );

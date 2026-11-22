@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { colors, shadow } from '../theme';
+import { colors, fonts, shadow } from '../theme';
 import { FadeIn, ScalePressable } from './ui';
 
 function Chip({ label, ok }) {
@@ -59,7 +59,7 @@ export default function QuestionCard({ question, uid, partnerId, names, onPress,
           </Text>
           {both && <Text style={{ fontSize: 16 }}>💞</Text>}
         </View>
-        <Text style={{ fontSize: 17, color: colors.text, fontWeight: '700', marginTop: 8, lineHeight: 24 }}>
+        <Text style={{ fontSize: 18, color: colors.text, fontFamily: fonts.bold, marginTop: 8, lineHeight: 24 }}>
           {question.text}
         </Text>
         <View style={{ flexDirection: 'row', marginTop: 12 }}>

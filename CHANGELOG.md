@@ -22,7 +22,14 @@ Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
   - Vibración sutil al tocar, enviar y responder (`expo-haptics`).
   - Resumen con contadores en el encabezado.
 
+### Identidad visual
+- **Nuevo logo e ícono:** dos mitades de un corazón que se cruzan (ver `docs/09-identidad.md`).
+- **Nueva paleta:** coral → rosa → violeta, con acento dorado y textos en ciruela.
+- **Tipografía Bricolage Grotesque** en títulos y botones; el nombre se escribe en minúsculas, `nosotros`.
+- Pantalla de carga e ícono de notificación con la marca.
+
 ### Corregido
+- **El teclado tapaba la contraseña:** `KeyboardAvoidingView` ahora usa `padding` también en Android, en login, vinculación y modales.
 - Las notificaciones no se registraban y no había forma de saber por qué (ver el diagnóstico de arriba).
 
 ### Cambiado

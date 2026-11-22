@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { colors, gradients, shadow, ui } from '../theme';
+import { colors, fonts, gradients, shadow, ui } from '../theme';
 
 /** Vibración sutil (no falla si el teléfono no la soporta) */
 export function tap(kind = 'light') {
@@ -99,7 +99,7 @@ export function FloatingHearts({ count = 7 }) {
       left: `${8 + ((i * 13) % 84)}%`,
       size: 14 + ((i * 7) % 16),
       delay: i * 700,
-      emoji: ['💗', '💞', '💕', '✨'][i % 4],
+      emoji: ['💗', '✨', '💛', '💜'][i % 4],
     }))
   ).current;
 
@@ -154,7 +154,7 @@ export function GradientButton({ title, onPress, loading, disabled, style, hapti
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', letterSpacing: 0.3 }}>{title}</Text>
+          <Text style={{ color: '#fff', fontSize: 17, fontFamily: fonts.bold, letterSpacing: 0.2 }}>{title}</Text>
         )}
       </LinearGradient>
     </ScalePressable>

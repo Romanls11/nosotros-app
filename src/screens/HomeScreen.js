@@ -6,7 +6,7 @@ import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../firebase';
 import { buildSql } from '../exportSql';
 import { preview, registerForPush, sendPush } from '../notifications';
-import { colors, gradients, shadow } from '../theme';
+import { colors, fonts, gradients, shadow } from '../theme';
 import QuestionCard from '../components/QuestionCard';
 import NewQuestionModal from '../components/NewQuestionModal';
 import QuestionModal from '../components/QuestionModal';
@@ -130,7 +130,7 @@ export default function HomeScreen({ user, coupleId }) {
         <SafeAreaView edges={['top']}>
           <View style={{ paddingHorizontal: 20, paddingTop: 8, flexDirection: 'row', alignItems: 'center' }}>
             <FadeIn style={{ flex: 1 }}>
-              <Text style={{ fontSize: 28, fontWeight: '800', color: '#fff' }}>Nosotros 💞</Text>
+              <Text style={{ fontSize: 32, fontFamily: fonts.display, color: '#fff', letterSpacing: -0.5 }}>nosotros</Text>
               <Text style={{ color: 'rgba(255,255,255,0.9)', marginTop: 2, fontWeight: '600' }}>
                 {names[user.uid]} {partnerName ? `& ${partnerName}` : '· esperando a tu pareja'}
               </Text>
@@ -171,7 +171,7 @@ export default function HomeScreen({ user, coupleId }) {
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ color: '#fff', fontSize: 22, fontWeight: '800' }}>{s.n}</Text>
+                <Text style={{ color: '#fff', fontSize: 26, fontFamily: fonts.display }}>{s.n}</Text>
                 <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 12, fontWeight: '600' }}>{s.t}</Text>
               </View>
             ))}

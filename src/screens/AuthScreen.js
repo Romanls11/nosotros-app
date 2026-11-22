@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import {
   Animated,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -11,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, gradients, shadow, ui } from '../theme';
+import { colors, fonts, gradients, shadow, ui } from '../theme';
 import { friendlyError, login, register, resetPassword } from '../services';
 import { FadeIn, FloatingHearts, GradientButton, PasswordInput, Pulse, tap } from '../components/ui';
 
@@ -68,16 +69,23 @@ export default function AuthScreen() {
     <LinearGradient colors={gradients.soft} style={{ flex: 1 }}>
       <FloatingHearts />
       <SafeAreaView style={{ flex: 1 }}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}>
           <ScrollView
             contentContainerStyle={{ padding: 24, flexGrow: 1, justifyContent: 'center' }}
             keyboardShouldPersistTaps="handled"
           >
             <FadeIn>
               <Pulse style={{ alignSelf: 'center' }}>
-                <Text style={{ fontSize: 64, textAlign: 'center' }}>💞</Text>
+                <LinearGradient
+                  colors={gradients.primary}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[{ width: 104, height: 104, borderRadius: 32, alignItems: 'center', justifyContent: 'center' }, shadow]}
+                >
+                  <Image source={require('../../assets/splash-icon.png')} style={{ width: 92, height: 92 }} />
+                </LinearGradient>
               </Pulse>
-              <Text style={[ui.title, { textAlign: 'center', marginTop: 8, fontSize: 34 }]}>Nosotros</Text>
+              <Text style={[ui.title, { textAlign: 'center', marginTop: 4, fontSize: 40 }]}>nosotros</Text>
               <Text style={[ui.subtitle, { textAlign: 'center' }]}>
                 Pregúntense cosas, respondan cuando quieran y conózcanse mejor.
               </Text>
@@ -118,7 +126,7 @@ export default function AuthScreen() {
                         backgroundColor: mode === o.k ? '#fff' : 'transparent',
                       }}
                     >
-                      <Text style={{ fontWeight: '800', color: mode === o.k ? colors.primary : colors.muted }}>{o.t}</Text>
+                      <Text style={{ fontFamily: fonts.bold, color: mode === o.k ? colors.primary : colors.muted }}>{o.t}</Text>
                     </Pressable>
                   ))}
                 </View>

@@ -53,10 +53,10 @@ export default function NewQuestionModal({ visible, onClose, coupleId, uid, onCr
   const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={close}>
+    <Modal visible={visible} animationType="slide" transparent statusBarTranslucent onRequestClose={close}>
       <KeyboardAvoidingView
         style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(43,34,48,0.45)' }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior="padding"
       >
         <Pressable style={{ flex: 1 }} onPress={close} />
         <View style={{ backgroundColor: colors.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 24 }}>

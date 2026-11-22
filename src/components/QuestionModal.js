@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, gradients, shadow, ui } from '../theme';
+import { colors, fonts, gradients, shadow, ui } from '../theme';
 import { deleteQuestion, friendlyError, saveAnswer } from '../services';
 import { formatDate } from './QuestionCard';
 import { FadeIn, GradientButton, tap } from './ui';
@@ -154,7 +154,7 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
     <Modal visible animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: colors.bg }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior="padding"
       >
         <ScrollView contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
           <LinearGradient
@@ -171,7 +171,7 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
                 {question.authorId === uid ? 'Tú preguntaste' : `${names[question.authorId] || 'Tu pareja'} preguntó`} ·{' '}
                 {formatDate(question.createdAt)}
               </Text>
-              <Text style={{ fontSize: 25, fontWeight: '800', color: '#fff', marginTop: 8, lineHeight: 33 }}>
+              <Text style={{ fontSize: 26, fontFamily: fonts.display, color: '#fff', marginTop: 8, lineHeight: 32 }}>
                 {question.text}
               </Text>
             </FadeIn>

@@ -1,4 +1,6 @@
-# Nosotros 💞
+<p align="center"><img src="assets/icon.png" width="120" alt="nosotros"/></p>
+
+# nosotros
 
 App móvil para parejas: **háganse preguntas, respóndanlas cuando quieran y conózcanse mejor.**
 Las preguntas y respuestas quedan guardadas para volver a leerlas cuando quieran.
@@ -82,6 +84,7 @@ Luego abre **Expo Go** en tu teléfono Android y escanea el código QR.
 | [06 · Generar el APK](docs/06-apk.md) | Instalar la app sin depender de la computadora |
 | [07 · Actualizaciones](docs/07-actualizaciones.md) | Publicar cambios sin recompilar (EAS Update) |
 | [08 · Compilar local](docs/08-compilar-local.md) | Generar el APK en tu PC sin esperar la fila |
+| [09 · Identidad visual](docs/09-identidad.md) | Logo, paleta y tipografía |
 | [CHANGELOG](CHANGELOG.md) | Bitácora de cambios |
 
 ## 🔐 Nota sobre seguridad

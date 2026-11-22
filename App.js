@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import {
+  useFonts,
+  BricolageGrotesque_500Medium,
+  BricolageGrotesque_700Bold,
+  BricolageGrotesque_800ExtraBold,
+} from '@expo-google-fonts/bricolage-grotesque';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -13,6 +19,11 @@ import HomeScreen from './src/screens/HomeScreen';
 export default function App() {
   const [user, setUser] = useState(undefined); // undefined = cargando
   const [profile, setProfile] = useState(undefined);
+  const [fontsLoaded] = useFonts({
+    BricolageGrotesque_500Medium,
+    BricolageGrotesque_700Bold,
+    BricolageGrotesque_800ExtraBold,
+  });
 
   // ¿Hay sesión iniciada?
   useEffect(() => onAuthStateChanged(auth, setUser), []);
@@ -39,7 +50,7 @@ export default function App() {
   }, [user]);
 
   let content;
-  if (user === undefined || (user && profile === undefined)) {
+  if (!fontsLoaded || user === undefined || (user && profile === undefined)) {
     content = (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>
         <ActivityIndicator color={colors.primary} size="large" />

@@ -2,6 +2,13 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [0.6.0] - 2026-11-22
+
+### Agregado
+- **👆 Deslizar tarjetas:** → para responder o ver, ← para dejar "para después" (`src/components/SwipeRow.js`).
+- Las preguntas "para después" se van al final de *Por responder*, atenuadas y con la etiqueta ⏰. Se guarda solo en el teléfono.
+- Pista de uso la primera vez.
+
 ## [0.5.0] - 2026-11-22
 
 ### Agregado

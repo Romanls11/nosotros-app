@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import { colors, fonts, shadow } from '../theme';
 import { FadeIn, ScalePressable } from './ui';
+import SwipeRow from './SwipeRow';
 
 function Chip({ label, ok }) {
   return (
@@ -26,7 +27,7 @@ export function formatDate(ts) {
   return ts.toDate().toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-export default function QuestionCard({ question, uid, partnerId, names, onPress, index = 0 }) {
+export default function QuestionCard({ question, uid, partnerId, names, onPress, index = 0, onSnooze, snoozed }) {
   const mine = !!question.answers?.[uid];
   const theirs = partnerId ? !!question.answers?.[partnerId] : false;
   const fromMe = question.authorId === uid;
@@ -35,6 +36,13 @@ export default function QuestionCard({ question, uid, partnerId, names, onPress,
 
   return (
     <FadeIn delay={Math.min(index, 8) * 60}>
+      <SwipeRow
+        style={{ marginBottom: 14 }}
+        onSwipeRight={onPress}
+        rightLabel={mine ? '👀 Ver' : '✍️ Responder'}
+        onSwipeLeft={onSnooze}
+        leftLabel={snoozed ? '↩️ Quitar de después' : '⏰ Para después'}
+      >
       <ScalePressable
         onPress={onPress}
         scaleTo={0.97}
@@ -44,8 +52,8 @@ export default function QuestionCard({ question, uid, partnerId, names, onPress,
             borderRadius: 20,
             padding: 18,
             paddingLeft: 22,
-            marginBottom: 14,
             overflow: 'hidden',
+            opacity: snoozed ? 0.6 : 1,
           },
           shadow,
         ]}
@@ -57,6 +65,7 @@ export default function QuestionCard({ question, uid, partnerId, names, onPress,
           <Text style={{ fontSize: 12, color: colors.muted, fontWeight: '600', flex: 1 }}>
             {question.daily ? '☀️ Pregunta del día' : fromMe ? '💬 Tú preguntaste' : `💌 ${names[question.authorId] || 'Tu pareja'} preguntó`} · {formatDate(question.createdAt)}
           </Text>
+          {snoozed && <Text style={{ fontSize: 12, color: colors.violet, fontWeight: '700', marginRight: 6 }}>⏰ Después</Text>}
           {both && <Text style={{ fontSize: 16 }}>💞</Text>}
         </View>
         <Text style={{ fontSize: 18, color: colors.text, fontFamily: fonts.bold, marginTop: 8, lineHeight: 24 }}>
@@ -67,6 +76,7 @@ export default function QuestionCard({ question, uid, partnerId, names, onPress,
           {partnerId && <Chip label={names[partnerId] || 'Pareja'} ok={theirs} />}
         </View>
       </ScalePressable>
+      </SwipeRow>
     </FadeIn>
   );
 }

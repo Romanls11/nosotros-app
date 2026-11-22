@@ -15,6 +15,7 @@ import DailyCard from '../components/DailyCard';
 import { dailyQuestionFor, dailyStreak, todayKey } from '../daily';
 import { ensureDailyQuestion } from '../services';
 import { useTheme } from '../themeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FadeIn, GradientHeader, ScalePressable, tap } from '../components/ui';
 
 const TABS = [
@@ -95,6 +96,31 @@ export default function HomeScreen({ user, coupleId }) {
     Share.share({ title: 'Exportación SQL', message: buildSql(coupleId, couple, questions) });
   }
 
+  // ---------- "Para después" (se guarda solo en este teléfono) ----------
+  const SNOOZE_KEY = `nosotros.despues.${user.uid}`;
+  const HINT_KEY = 'nosotros.pistaDeslizar';
+  const [snoozes, setSnoozes] = useState({}); // { questionId: true }
+  const [showHint, setShowHint] = useState(false);
+  useEffect(() => {
+    AsyncStorage.getItem(SNOOZE_KEY).then((v) => v && setSnoozes(JSON.parse(v))).catch(() => {});
+    AsyncStorage.getItem(HINT_KEY).then((v) => !v && setShowHint(true)).catch(() => {});
+  }, [SNOOZE_KEY]);
+  function toggleSnooze(id) {
+    setSnoozes((prev) => {
+      const next = { ...prev };
+      if (next[id]) delete next[id];
+      else next[id] = true;
+      AsyncStorage.setItem(SNOOZE_KEY, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+    hideHint();
+  }
+  function hideHint() {
+    if (!showHint) return;
+    setShowHint(false);
+    AsyncStorage.setItem(HINT_KEY, '1').catch(() => {});
+  }
+
   // ---------- Agrupar por pestaña ----------
   const grouped = useMemo(() => {
     const g = { pending: [], waiting: [], done: [] };
@@ -105,8 +131,10 @@ export default function HomeScreen({ user, coupleId }) {
       else if (!theirs) g.waiting.push(q);
       else g.done.push(q);
     });
+    // Las que dejaste "para después" se van al final de "Por responder"
+    g.pending.sort((a, b) => (snoozes[a.id] ? 1 : 0) - (snoozes[b.id] ? 1 : 0));
     return g;
-  }, [questions, user.uid, partnerId]);
+  }, [questions, user.uid, partnerId, snoozes]);
 
   // ---------- Indicador animado de pestañas ----------
   const [tabsWidth, setTabsWidth] = useState(0);
@@ -262,11 +290,12 @@ export default function HomeScreen({ user, coupleId }) {
       <FlatList
         key={tab}
         data={grouped[tab]}
-        extraData={scheme}
+        extraData={[scheme, snoozes]}
         keyExtractor={(q) => q.id}
         contentContainerStyle={{ padding: 20, paddingBottom: 130 }}
         ListHeaderComponent={
           partnerId ? (
+            <View>
             <DailyCard
               text={dailyDoc?.text || dailyText}
               mine={!!dailyDoc?.answers?.[user.uid]}
@@ -275,6 +304,29 @@ export default function HomeScreen({ user, coupleId }) {
               streak={streak}
               onPress={openDaily}
             />
+            {showHint && tab === 'pending' && grouped.pending.length > 0 && (
+              <FadeIn delay={300}>
+                <Pressable
+                  onPress={hideHint}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: colors.violetSoft,
+                    borderRadius: 14,
+                    padding: 12,
+                    marginBottom: 14,
+                  }}
+                >
+                  <Text style={{ fontSize: 18, marginRight: 8 }}>👆</Text>
+                  <Text style={{ flex: 1, color: colors.text, fontSize: 13, lineHeight: 18 }}>
+                    Desliza una tarjeta <Text style={{ fontWeight: '800' }}>→</Text> para responder o{' '}
+                    <Text style={{ fontWeight: '800' }}>←</Text> para dejarla para después.
+                  </Text>
+                  <Text style={{ color: colors.muted, marginLeft: 8 }}>✕</Text>
+                </Pressable>
+              </FadeIn>
+            )}
+            </View>
           ) : null
         }
         renderItem={({ item, index }) => (
@@ -284,7 +336,12 @@ export default function HomeScreen({ user, coupleId }) {
             uid={user.uid}
             partnerId={partnerId}
             names={names}
-            onPress={() => setOpenId(item.id)}
+            onPress={() => {
+              hideHint();
+              setOpenId(item.id);
+            }}
+            snoozed={tab === 'pending' && !!snoozes[item.id]}
+            onSnooze={tab === 'pending' ? () => toggleSnooze(item.id) : undefined}
           />
         )}
         ListEmptyComponent={

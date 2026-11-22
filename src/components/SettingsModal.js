@@ -5,6 +5,7 @@ import { friendlyError, leaveCouple, logout, resetPassword } from '../services';
 import { FadeIn, ScalePressable, tap } from './ui';
 import { useTheme } from '../themeContext';
 import AboutModal from './AboutModal';
+import { useShowWelcome } from '../welcome';
 import { ABOUT } from '../about';
 
 function Row({ icon, title, subtitle, onPress, danger, right }) {
@@ -85,6 +86,7 @@ export default function SettingsModal({
 }) {
   const [leaving, setLeaving] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const showWelcome = useShowWelcome();
   const names = couple?.names || {};
   const myName = names[user.uid] || user.displayName || 'Tú';
   const partnerName = partnerId ? names[partnerId] : null;
@@ -195,6 +197,8 @@ export default function SettingsModal({
           </Section>
 
           <Section title="Información" delay={300}>
+            <Row icon="👋" title="Ver bienvenida" subtitle="Repasar cómo funciona la app" onPress={() => { onClose(); showWelcome(); }} />
+            <Divider />
             <Row icon="👨‍💻" title="Acerca de" subtitle={`nosotros v${ABOUT.version} · por ${ABOUT.developer.name}`} onPress={() => setShowAbout(true)} />
           </Section>
 

@@ -100,7 +100,21 @@ export default function AboutModal({ visible, onClose }) {
                 </View>
               </View>
 
-              <View style={{ marginTop: 10 }}>
+              {!!d.jobs?.length && (
+                <View style={{ marginTop: 14 }}>
+                  {d.jobs.map((j) => (
+                    <View key={j.place} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                      <Text style={{ fontSize: 18, width: 34 }}>{j.icon}</Text>
+                      <Text style={{ color: colors.text, flex: 1 }}>
+                        <Text style={{ fontWeight: '800' }}>{j.title}</Text>
+                        <Text style={{ color: colors.muted }}> · {j.place}</Text>
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              <View style={{ marginTop: 4 }}>
                 <LinkRow icon="📍" label="Ubicación" value={d.location} />
                 <LinkRow icon="✉️" label="Correo" value={d.email} url={d.email && `mailto:${d.email}`} />
                 <LinkRow icon="🐙" label="GitHub" value={clean(d.github)} url={d.github} />

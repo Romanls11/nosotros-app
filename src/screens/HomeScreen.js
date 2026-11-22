@@ -13,6 +13,8 @@ import QuestionModal from '../components/QuestionModal';
 import SettingsModal from '../components/SettingsModal';
 import DailyCard from '../components/DailyCard';
 import StatsModal from '../components/StatsModal';
+import MemoryCard from '../components/MemoryCard';
+import { findMemory } from '../memories';
 import { CATEGORIES, soft } from '../categories';
 import { isLocked, scheduleCapsuleReminders } from '../capsule';
 import { dailyQuestionFor, dailyStreak, todayKey } from '../daily';
@@ -174,6 +176,9 @@ export default function HomeScreen({ user, coupleId }) {
     const id = await ensureDailyQuestion(coupleId, user.uid, dayKey, dailyText);
     setOpenId(id);
   }
+
+  // 📅 Un día como hoy
+  const memory = useMemo(() => findMemory(questions, user.uid, partnerId), [questions, user.uid, partnerId, dayKey]);
 
   const openQuestion = questions?.find((q) => q.id === openId) || null;
 
@@ -339,6 +344,13 @@ export default function HomeScreen({ user, coupleId }) {
               partnerName={partnerName}
               streak={streak}
               onPress={openDaily}
+            />
+            <MemoryCard
+              memory={memory}
+              uid={user.uid}
+              partnerId={partnerId}
+              names={names}
+              onPress={() => setOpenId(memory.question.id)}
             />
             {/* Filtro por categoría (solo aparece si hay preguntas con categoría) */}
             {(questions || []).some((q) => q.category) && (

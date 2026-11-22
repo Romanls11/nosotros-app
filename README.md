@@ -105,8 +105,12 @@ Lo que **nunca** se sube es `exportar/serviceAccount.json` (clave de administrad
 
 ## 👨‍💻 Autor
 
-**Román Luna Soto**, desarrollador de software e instructor de informática.
-GitHub: [@Romanls11](https://github.com/Romanls11)
+**Román Luna Soto**: desarrollador de software e instructor de informática.
+- 💻 Desarrollador en Genio Inventivo SAPI de CV
+- 🎓 Instructor de informática en BEONE
+- 📍 Huatusco, Veracruz, México
+- ✉️ romanlunasoto27@gmail.com
+- 🐙 GitHub: [@Romanls11](https://github.com/Romanls11)
 
 ## 📄 Licencia
 

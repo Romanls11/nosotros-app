@@ -16,16 +16,31 @@ import { ThemeContext, useAppTheme } from './src/themeContext';
 import AuthScreen from './src/screens/AuthScreen';
 import PairScreen from './src/screens/PairScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import WelcomeScreen from './src/screens/WelcomeScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { WelcomeContext } from './src/welcome';
 
 export default function App() {
   const theme = useAppTheme(); // claro / oscuro (debe ir primero: actualiza los colores)
   const [user, setUser] = useState(undefined); // undefined = cargando
   const [profile, setProfile] = useState(undefined);
+  const [welcome, setWelcome] = useState(undefined); // undefined = revisando, true = mostrar
   const [fontsLoaded] = useFonts({
     BricolageGrotesque_500Medium,
     BricolageGrotesque_700Bold,
     BricolageGrotesque_800ExtraBold,
   });
+
+  // ¿Ya vio la bienvenida?
+  useEffect(() => {
+    AsyncStorage.getItem('nosotros.bienvenida')
+      .then((v) => setWelcome(!v))
+      .catch(() => setWelcome(false));
+  }, []);
+  function finishWelcome() {
+    setWelcome(false);
+    AsyncStorage.setItem('nosotros.bienvenida', '1').catch(() => {});
+  }
 
   // ¿Hay sesión iniciada?
   useEffect(() => onAuthStateChanged(auth, setUser), []);
@@ -52,12 +67,14 @@ export default function App() {
   }, [user]);
 
   let content;
-  if (!fontsLoaded || user === undefined || (user && profile === undefined)) {
+  if (!fontsLoaded || welcome === undefined || user === undefined || (user && profile === undefined)) {
     content = (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>
         <ActivityIndicator color={colors.primary} size="large" />
       </View>
     );
+  } else if (welcome) {
+    content = <WelcomeScreen onDone={finishWelcome} />;
   } else if (!user) {
     content = <AuthScreen />;
   } else if (!profile?.coupleId) {
@@ -68,12 +85,14 @@ export default function App() {
 
   return (
     <ThemeContext.Provider value={theme}>
+     <WelcomeContext.Provider value={() => setWelcome(true)}>
       <SafeAreaProvider>
         <StatusBar style={theme.scheme === 'dark' ? 'light' : 'dark'} />
         <View style={{ flex: 1, backgroundColor: colors.bg }}>
           {content}
         </View>
       </SafeAreaProvider>
+     </WelcomeContext.Provider>
     </ThemeContext.Provider>
   );
 }

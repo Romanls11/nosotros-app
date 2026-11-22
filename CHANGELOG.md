@@ -2,6 +2,13 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [1.2.0] - 2026-11-22
+
+### Agregado
+- **👋 Bienvenida:** 3 pantallas animadas con paralaje, puntos que se estiran y botón *Saltar*. Aparece la primera vez y se puede repetir en **Ajustes → Ver bienvenida** (`src/screens/WelcomeScreen.js`).
+- **📅 Un día como hoy:** tarjeta con una pregunta que respondieron juntos hace 1 semana, 1 mes, 3 meses, 6 meses o 1 año, y las dos respuestas (`src/memories.js` y `src/components/MemoryCard.js`).
+- **Acerca de** con todos los datos del desarrollador: trabajos, ubicación, correo y GitHub.
+
 ## [1.1.0] - 2026-11-22
 
 ### Agregado

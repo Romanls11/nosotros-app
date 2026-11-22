@@ -8,8 +8,12 @@ export const ABOUT = {
   developer: {
     name: 'Román Luna Soto',
     role: 'Desarrollador de software e instructor de informática',
-    location: null, // ej. 'Huatusco, Veracruz, México'
-    email: null, // ej. 'tucorreo@gmail.com'
+    jobs: [
+      { icon: '💻', title: 'Desarrollador', place: 'Genio Inventivo SAPI de CV' },
+      { icon: '🎓', title: 'Instructor de informática', place: 'BEONE' },
+    ],
+    location: 'Huatusco, Veracruz, México',
+    email: 'romanlunasoto27@gmail.com',
     github: 'https://github.com/Romanls11',
     linkedin: null, // ej. 'https://www.linkedin.com/in/...'
     website: null,

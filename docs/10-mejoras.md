@@ -84,3 +84,10 @@ Se abre con el botón **📊** del encabezado (cuando ya hay pareja). Todo se ca
 
 ---
 🎉 **Plan de mejoras completo (v1.0.0).**
+
+## Extras (v1.1 – v1.2)
+| Mejora | Detalle |
+|---|---|
+| 👨‍💻 Acerca de | Ajustes → Información. Los datos se editan en `src/about.js`. Tocar el logo 5 veces tiene sorpresa 🥚 |
+| 👋 Bienvenida | Primera vez que se abre la app (`nosotros.bienvenida` en `AsyncStorage`). Se puede repetir desde Ajustes |
+| 📅 Un día como hoy | Busca preguntas creadas hace 1 año, 6 meses, 3 meses, 1 mes o 1 semana (prefiere la más antigua), que los dos respondieron y que no sean cápsulas cerradas |

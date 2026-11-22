@@ -7,7 +7,7 @@ Se implementan **una por una**. Cada una se publica con `npm run publicar`, salv
 | 1 | ☀️ **Pregunta del día** + racha 🔥 | ✅ Hecha | 0.4.0 |
 | 2 | 🌙 Modo oscuro (paleta ciruela) | ✅ Hecha | 0.5.0 |
 | 3 | 👆 Deslizar tarjetas para responder o posponer | ✅ Hecha | 0.6.0 |
-| 4 | 😍 Reacciones y mini chat por pregunta | Pendiente | — |
+| 4 | 😍 Reacciones y mini chat por pregunta | ✅ Hecha | 0.7.0 |
 | 5 | 📊 "Nuestro mapa": estadísticas visuales | Pendiente | — |
 | 6 | 🏷️ Categorías con color (profundas, divertidas, futuro…) | Pendiente | — |
 | 7 | ⏳ Cápsula del tiempo (preguntas que se abren en una fecha) | Pendiente | — |
@@ -35,3 +35,12 @@ Se implementan **una por una**. Cada una se publica con `npm run publicar`, salv
 - Hay vibración al cruzar el punto de acción y el fondo de la tarjeta muestra la acción que se va a hacer.
 - Una pista 👆 aparece la primera vez y desaparece al usarla o al tocar ✕.
 - Está hecho con `PanResponder` y `Animated` (`src/components/SwipeRow.js`), sin librerías nativas, así que se puede publicar con `npm run publicar`.
+
+## 4. Reacciones y mini chat
+- **Reacciones** (❤️ 😂 🥹 😮 🔥 🙏) a la respuesta de tu pareja, cuando los dos ya respondieron. Tocar la misma la quita. Tu respuesta muestra la reacción que te pusieron, con animación.
+  - Se guardan en `questions/{id}.reactions[uid]`.
+- **Mini chat** "💬 Platiquen sobre esto" debajo de las respuestas, con burbujas, hora, en tiempo real y máximo 500 caracteres por mensaje.
+  - Se guarda en `questions/{id}/comments/{commentId}` y `commentCount` suma 1 por mensaje.
+- **Tarjetas:** muestran las reacciones y el contador 💬.
+- **Notificaciones:** "❤️ Román reaccionó a tu respuesta" y "💬 Román: …".
+- **Reglas nuevas:** reacciones (solo la tuya), contador (solo +1) y `comments` (solo integrantes, autor = tú, de 1 a 500 caracteres). Se agregó la función `onlyMyKey()`.

@@ -1,18 +1,30 @@
 rules_version = '2';
+
+// Reglas de seguridad de "nosotros": solo ustedes dos pueden ver y escribir sus cosas.
+// Cópialas completas en: Firebase → Firestore → Reglas → Publicar.
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function signedIn() { return request.auth != null; }
+    function signedIn() {
+      return request.auth != null;
+    }
 
     function isMember(coupleId) {
       return signedIn() &&
         request.auth.uid in get(/databases/$(database)/documents/couples/$(coupleId)).data.members;
     }
 
+    // Solo escribe en el mapa `campo` la entrada con tu propio uid
+    function onlyMyKey(field) {
+      return request.resource.data.get(field, {}).diff(resource.data.get(field, {})).affectedKeys().hasOnly([request.auth.uid]);
+    }
+
+    // Perfil de cada usuario: solo el dueño
     match /users/{uid} {
       allow read, write: if signedIn() && request.auth.uid == uid;
     }
 
+    // Códigos de invitación: se consultan por código exacto (no se pueden listar)
     match /invites/{code} {
       allow get: if signedIn();
       allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
@@ -20,29 +32,65 @@ service cloud.firestore {
 
     match /couples/{coupleId} {
       allow read: if signedIn() && request.auth.uid in resource.data.members;
+
+      // Crear la pareja: empieza solo con quien la crea
       allow create: if signedIn() && request.resource.data.members == [request.auth.uid];
+
+      // Unirse: solo si hay un integrante y te agregas tú mismo
       allow update: if signedIn()
         && resource.data.members.size() == 1
         && !(request.auth.uid in resource.data.members)
         && request.resource.data.members == resource.data.members.concat([request.auth.uid])
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'names']);
 
+      // Notificaciones: cada integrante solo guarda SU token de push
+      allow update: if signedIn()
+        && request.auth.uid in resource.data.members
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['tokens'])
+        && onlyMyKey('tokens');
+
       // Desvincularse: un integrante se quita a sí mismo (y borra su token)
       allow update: if signedIn()
         && request.auth.uid in resource.data.members
         && request.resource.data.members == resource.data.members.removeAll([request.auth.uid])
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'tokens'])
-        && request.resource.data.get('tokens', {}).diff(resource.data.get('tokens', {})).affectedKeys().hasOnly([request.auth.uid]);
+        && onlyMyKey('tokens');
 
       match /questions/{questionId} {
         allow read: if isMember(coupleId);
+
         allow create: if isMember(coupleId)
           && request.resource.data.authorId == request.auth.uid
           && request.resource.data.answers == {};
+
+        // Respuestas: cada quien solo escribe SU respuesta
         allow update: if isMember(coupleId)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['answers'])
-          && request.resource.data.answers.diff(resource.data.answers).affectedKeys().hasOnly([request.auth.uid]);
+          && onlyMyKey('answers');
+
+        // Reacciones: cada quien solo pone/quita SU reacción
+        allow update: if isMember(coupleId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
+          && onlyMyKey('reactions');
+
+        // Contador del chat: solo puede subir de 1 en 1
+        allow update: if isMember(coupleId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['commentCount', 'lastCommentAt'])
+          && request.resource.data.commentCount == resource.data.get('commentCount', 0) + 1;
+
+        // Solo quien hizo la pregunta la puede borrar
         allow delete: if isMember(coupleId) && resource.data.authorId == request.auth.uid;
+
+        // Mini chat de la pregunta
+        match /comments/{commentId} {
+          allow read: if isMember(coupleId);
+          allow create: if isMember(coupleId)
+            && request.resource.data.authorId == request.auth.uid
+            && request.resource.data.text is string
+            && request.resource.data.text.size() > 0
+            && request.resource.data.text.size() <= 500;
+          allow delete: if isMember(coupleId) && resource.data.authorId == request.auth.uid;
+        }
       }
     }
   }

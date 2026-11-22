@@ -14,6 +14,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  increment,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -130,6 +131,22 @@ export async function ensureDailyQuestion(coupleId, uid, dateKey, text) {
     }
   }
   return ref.id;
+}
+
+/** Reacción a la respuesta de tu pareja (null = quitarla) */
+export function setReaction(coupleId, questionId, uid, emoji) {
+  return updateDoc(doc(db, 'couples', coupleId, 'questions', questionId), {
+    [`reactions.${uid}`]: emoji || deleteField(),
+  });
+}
+
+/** Mensaje en el mini chat de la pregunta (y suma 1 al contador) */
+export async function addComment(coupleId, questionId, uid, text) {
+  const qRef = doc(db, 'couples', coupleId, 'questions', questionId);
+  const batch = writeBatch(db);
+  batch.set(doc(collection(qRef, 'comments')), { text: text.trim(), authorId: uid, createdAt: serverTimestamp() });
+  batch.update(qRef, { commentCount: increment(1), lastCommentAt: serverTimestamp() });
+  await batch.commit();
 }
 
 export function deleteQuestion(coupleId, questionId) {

@@ -17,6 +17,7 @@ import { colors, fonts, gradients, shadow, ui } from '../theme';
 import { deleteQuestion, friendlyError, saveAnswer } from '../services';
 import { formatDate } from './QuestionCard';
 import { FadeIn, GradientButton, tap } from './ui';
+import { Chat, ReactionBadge, ReactionBar } from './Conversation';
 
 function AnswerBox({ title, children, soft }) {
   const box = [
@@ -91,7 +92,8 @@ function Reveal({ children, play }) {
   );
 }
 
-export default function QuestionModal({ question, onClose, coupleId, uid, partnerId, names, onAnswered }) {
+export default function QuestionModal({ question, onClose, coupleId, uid, partnerId, names, onAnswered, onReacted, onCommented }) {
+  const scrollRef = useRef(null);
   const [draft, setDraft] = useState('');
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -156,7 +158,7 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
         style={{ flex: 1, backgroundColor: colors.bg }}
         behavior="padding"
       >
-        <ScrollView contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+        <ScrollView ref={scrollRef} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
           <LinearGradient
             colors={gradients.primary}
             start={{ x: 0, y: 0 }}
@@ -201,6 +203,7 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
                   </>
                 ) : (
                   <>
+                    <ReactionBadge emoji={partnerId ? question.reactions?.[partnerId] : null} name={partnerName} />
                     <Text style={{ fontSize: 16, color: colors.text, lineHeight: 24 }}>{myAnswer?.text}</Text>
                     <Pressable onPress={() => setEditing(true)} hitSlop={8}>
                       <Text style={{ color: colors.primary, fontWeight: '800', marginTop: 12 }}>Editar</Text>
@@ -229,10 +232,23 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
                   <Reveal play={justRevealed}>
                     <AnswerBox title={`💞 Respuesta de ${partnerName}`} soft>
                       <Text style={{ fontSize: 16, color: colors.text, lineHeight: 24 }}>{partnerAnswer.text}</Text>
+                      <ReactionBar coupleId={coupleId} question={question} uid={uid} onReacted={onReacted} />
                     </AnswerBox>
                   </Reveal>
                 )}
               </FadeIn>
+            )}
+
+            {/* Mini chat: cuando los dos ya respondieron */}
+            {partnerAnswer && myAnswer && (
+              <Chat
+                coupleId={coupleId}
+                question={question}
+                uid={uid}
+                names={names}
+                onSent={onCommented}
+                onNewMessage={() => setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 150)}
+              />
             )}
 
             {question.authorId === uid && !question.daily && (

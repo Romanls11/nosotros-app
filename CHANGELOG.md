@@ -2,6 +2,17 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [0.7.0] - 2026-11-22
+
+### Agregado
+- **😍 Reacciones** a la respuesta de tu pareja e insignia con la reacción que te pusieron (`src/components/Conversation.js`).
+- **💬 Mini chat por pregunta** en tiempo real, con contador en las tarjetas.
+- Notificaciones de reacción y de mensaje.
+- `setReaction()` y `addComment()` en `services.js`.
+
+### Corregido
+- **`firestore.rules` había perdido la regla de los tokens de notificación**, y por eso los teléfonos no podían registrarse para recibir avisos. El archivo se rehízo completo con todas las reglas.
+
 ## [0.6.0] - 2026-11-22
 
 ### Agregado

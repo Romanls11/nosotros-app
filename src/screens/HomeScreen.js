@@ -92,6 +92,13 @@ export default function HomeScreen({ user, coupleId }) {
     }
   }
 
+  function notifyReaction(question, emoji) {
+    sendPush(partnerToken, `${emoji} ${myName} reaccionó a tu respuesta`, preview(question.text));
+  }
+  function notifyComment(question, text) {
+    sendPush(partnerToken, `💬 ${myName}`, `${preview(text, 80)} · ${preview(question.text, 40)}`);
+  }
+
   function exportSql() {
     Share.share({ title: 'Exportación SQL', message: buildSql(coupleId, couple, questions) });
   }
@@ -389,6 +396,8 @@ export default function HomeScreen({ user, coupleId }) {
         partnerId={partnerId}
         names={names}
         onAnswered={notifyAnswered}
+        onReacted={notifyReaction}
+        onCommented={notifyComment}
       />
 
       <SettingsModal

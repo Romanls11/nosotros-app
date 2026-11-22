@@ -2,6 +2,12 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [1.4.1] - 2026-11-22
+
+### Agregado
+- **Animaciones según la reacción** (`ReactionAnim` y `ReactionBurst` en `Reactions.js`): ❤️ late, 😂 se sacude de risa, 🥹 flota con ternura, 😮 crece de sorpresa, 🔥 parpadea como flama y 🙏 hace reverencia. Se ven en las tarjetas, en la insignia y en el chip.
+- **Ráfaga al reaccionar:** nueve copias del emoji salen flotando de la respuesta, con un movimiento distinto para cada reacción.
+
 ## [1.4.0] - 2026-11-22
 
 ### Agregado

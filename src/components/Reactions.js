@@ -18,12 +18,109 @@ export const REACTIONS = [
 ];
 export const reactionLabel = (e) => REACTIONS.find((r) => r.e === e)?.label || '';
 
+/**
+ * Animación "con personalidad" según la reacción:
+ * ❤️ late · 😂 se ríe (se sacude) · 🥹 flota con ternura · 😮 se sorprende (crece)
+ * 🔥 parpadea como flama · 🙏 hace reverencia
+ */
+const MOTION = {
+  '❤️': (v) => ({ transform: [{ scale: v.interpolate({ inputRange: [0, 0.15, 0.3, 0.45, 0.6, 1], outputRange: [1, 1.28, 1, 1.18, 1, 1] }) }] }),
+  '😂': (v) => ({
+    transform: [
+      { rotate: v.interpolate({ inputRange: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 1], outputRange: ['0deg', '-14deg', '14deg', '-12deg', '12deg', '0deg', '0deg'] }) },
+      { translateY: v.interpolate({ inputRange: [0, 0.15, 0.3, 0.45, 1], outputRange: [0, -3, 0, -2, 0] }) },
+    ],
+  }),
+  '🥹': (v) => ({
+    transform: [
+      { translateY: v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, -4, 0] }) },
+      { scale: v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 1.08, 1] }) },
+    ],
+  }),
+  '😮': (v) => ({ transform: [{ scale: v.interpolate({ inputRange: [0, 0.2, 0.35, 0.5, 1], outputRange: [1, 1.4, 0.95, 1, 1] }) }] }),
+  '🔥': (v) => ({
+    opacity: v.interpolate({ inputRange: [0, 0.2, 0.4, 0.6, 0.8, 1], outputRange: [1, 0.75, 1, 0.8, 1, 1] }),
+    transform: [
+      { scaleY: v.interpolate({ inputRange: [0, 0.2, 0.4, 0.6, 0.8, 1], outputRange: [1, 1.18, 0.95, 1.12, 1, 1] }) },
+      { translateY: v.interpolate({ inputRange: [0, 0.2, 0.4, 0.6, 1], outputRange: [0, -2, 0, -1, 0] }) },
+    ],
+  }),
+  '🙏': (v) => ({
+    transform: [
+      { rotate: v.interpolate({ inputRange: [0, 0.25, 0.5, 1], outputRange: ['0deg', '-18deg', '0deg', '0deg'] }) },
+      { translateY: v.interpolate({ inputRange: [0, 0.25, 0.5, 1], outputRange: [0, 3, 0, 0] }) },
+    ],
+  }),
+};
+const DURATION = { '❤️': 1400, '😂': 1300, '🥹': 2200, '😮': 1600, '🔥': 900, '🙏': 1800 };
+
+/** Envuelve un emoji y lo anima según su tipo (en bucle, con pausas) */
+export function ReactionAnim({ emoji, children, delay = 0, style }) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!emoji) return;
+    v.setValue(0);
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.delay(delay),
+        Animated.timing(v, { toValue: 1, duration: DURATION[emoji] || 1400, easing: Easing.linear, useNativeDriver: true }),
+        Animated.timing(v, { toValue: 0, duration: 0, useNativeDriver: true }),
+        Animated.delay(1600),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [emoji]);
+  const motion = MOTION[emoji] ? MOTION[emoji](v) : {};
+  return <Animated.View style={[style, motion]}>{children}</Animated.View>;
+}
+
+/** Ráfaga: varias copias del emoji salen flotando hacia arriba (al reaccionar) */
+export function ReactionBurst({ emoji, burstKey }) {
+  const parts = useRef(
+    Array.from({ length: 9 }, (_, i) => ({ v: new Animated.Value(0), x: (i - 4) * 18 + (i % 2 ? 6 : -6), d: i * 45, s: 0.8 + (i % 3) * 0.25 }))
+  ).current;
+  useEffect(() => {
+    if (!emoji || !burstKey) return;
+    parts.forEach((p) => p.v.setValue(0));
+    Animated.stagger(
+      40,
+      parts.map((p) => Animated.timing(p.v, { toValue: 1, duration: 1100 + p.d, easing: Easing.out(Easing.quad), useNativeDriver: true }))
+    ).start();
+  }, [burstKey]);
+  if (!emoji || !burstKey) return null;
+  const wobble = emoji === '😂' || emoji === '🙏';
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, bottom: 20, height: 1, alignItems: 'center' }}>
+      {parts.map((p, i) => (
+        <Animated.Text
+          key={i}
+          style={{
+            position: 'absolute',
+            fontSize: 22,
+            opacity: p.v.interpolate({ inputRange: [0, 0.1, 0.75, 1], outputRange: [0, 1, 0.9, 0] }),
+            transform: [
+              { translateX: p.v.interpolate({ inputRange: [0, 1], outputRange: [0, p.x * (emoji === '😮' ? 1.8 : 1)] }) },
+              { translateY: p.v.interpolate({ inputRange: [0, 1], outputRange: [0, emoji === '🔥' ? -150 : -120 - (i % 3) * 20] }) },
+              { scale: p.v.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0.3, p.s * (emoji === '❤️' ? 1.25 : 1.1), p.s] }) },
+              { rotate: wobble ? p.v.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['0deg', i % 2 ? '25deg' : '-25deg', '0deg'] }) : '0deg' },
+            ],
+          }}
+        >
+          {emoji}
+        </Animated.Text>
+      ))}
+    </View>
+  );
+}
+
 /** Botón + bandeja para reaccionar a la respuesta de tu pareja */
 export function ReactionBar({ coupleId, question, uid, onReacted }) {
   const mine = question.reactions?.[uid] || null;
   const [open, setOpen] = useState(false);
   const [preview, setPreview] = useState(null); // emoji presionado (muestra su nombre)
   const tray = useRef(new Animated.Value(0)).current;
+  const [burst, setBurst] = useState({ emoji: null, key: 0 });
   const chipPop = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -37,6 +134,7 @@ export function ReactionBar({ coupleId, question, uid, onReacted }) {
     tap(next ? 'success' : 'light');
     setOpen(false);
     setPreview(null);
+    if (next) setBurst((b) => ({ emoji: next, key: b.key + 1 }));
     chipPop.setValue(0.4);
     Animated.spring(chipPop, { toValue: 1, useNativeDriver: true, friction: 4, tension: 120 }).start();
     try {
@@ -47,6 +145,7 @@ export function ReactionBar({ coupleId, question, uid, onReacted }) {
 
   return (
     <View style={{ marginTop: 14 }}>
+      <ReactionBurst emoji={burst.emoji} burstKey={burst.key} />
       {/* Nombre de la reacción mientras la presionas */}
       {open && (
         <View style={{ height: 26, alignItems: 'flex-start', justifyContent: 'center', marginBottom: 4 }}>
@@ -165,7 +264,9 @@ export function ReactionBar({ coupleId, question, uid, onReacted }) {
                     marginRight: 8,
                   }}
                 >
-                  <Text style={{ fontSize: 17 }}>{mine}</Text>
+                  <ReactionAnim emoji={mine}>
+                    <Text style={{ fontSize: 17 }}>{mine}</Text>
+                  </ReactionAnim>
                 </View>
                 <Text style={{ color: colors.primary, fontFamily: fonts.bold, fontSize: 14 }}>{reactionLabel(mine)}</Text>
               </>
@@ -233,7 +334,9 @@ export function ReactionBadge({ emoji, name }) {
           transform: [{ rotate }],
         }}
       >
-        <Text style={{ fontSize: 15 }}>{emoji}</Text>
+        <ReactionAnim emoji={emoji} delay={600}>
+          <Text style={{ fontSize: 15 }}>{emoji}</Text>
+        </ReactionAnim>
       </Animated.View>
       <Text style={{ fontSize: 12, color: colors.text, marginLeft: 6 }}>
         <Text style={{ fontWeight: '800' }}>{name}</Text>
@@ -265,7 +368,9 @@ export function ReactionStack({ reactions }) {
             zIndex: list.length - i,
           }}
         >
-          <Text style={{ fontSize: 13 }}>{e}</Text>
+          <ReactionAnim emoji={e} delay={i * 400}>
+            <Text style={{ fontSize: 13 }}>{e}</Text>
+          </ReactionAnim>
         </View>
       ))}
     </View>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Animated, FlatList, Pressable, Share, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Animated, FlatList, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
@@ -13,6 +13,7 @@ import QuestionModal from '../components/QuestionModal';
 import SettingsModal from '../components/SettingsModal';
 import DailyCard from '../components/DailyCard';
 import StatsModal from '../components/StatsModal';
+import { CATEGORIES, soft } from '../categories';
 import { dailyQuestionFor, dailyStreak, todayKey } from '../daily';
 import { ensureDailyQuestion } from '../services';
 import { useTheme } from '../themeContext';
@@ -33,6 +34,7 @@ export default function HomeScreen({ user, coupleId }) {
   const [showNew, setShowNew] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [filter, setFilter] = useState(null); // categoría seleccionada
   const [openId, setOpenId] = useState(null);
 
   // Si un listener falla (p. ej. permisos aún propagándose), se reintenta solo
@@ -134,6 +136,7 @@ export default function HomeScreen({ user, coupleId }) {
   const grouped = useMemo(() => {
     const g = { pending: [], waiting: [], done: [] };
     (questions || []).forEach((q) => {
+      if (filter && q.category !== filter) return;
       const mine = !!q.answers?.[user.uid];
       const theirs = partnerId ? !!q.answers?.[partnerId] : false;
       if (!mine) g.pending.push(q);
@@ -143,7 +146,7 @@ export default function HomeScreen({ user, coupleId }) {
     // Las que dejaste "para después" se van al final de "Por responder"
     g.pending.sort((a, b) => (snoozes[a.id] ? 1 : 0) - (snoozes[b.id] ? 1 : 0));
     return g;
-  }, [questions, user.uid, partnerId, snoozes]);
+  }, [questions, user.uid, partnerId, snoozes, filter]);
 
   // ---------- Indicador animado de pestañas ----------
   const [tabsWidth, setTabsWidth] = useState(0);
@@ -315,7 +318,7 @@ export default function HomeScreen({ user, coupleId }) {
       <FlatList
         key={tab}
         data={grouped[tab]}
-        extraData={[scheme, snoozes]}
+        extraData={[scheme, snoozes, filter]}
         keyExtractor={(q) => q.id}
         contentContainerStyle={{ padding: 20, paddingBottom: 130 }}
         ListHeaderComponent={
@@ -329,6 +332,42 @@ export default function HomeScreen({ user, coupleId }) {
               streak={streak}
               onPress={openDaily}
             />
+            {/* Filtro por categoría (solo aparece si hay preguntas con categoría) */}
+            {(questions || []).some((q) => q.category) && (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ marginHorizontal: -20, marginBottom: 14 }}
+                contentContainerStyle={{ paddingHorizontal: 20 }}
+              >
+                {[{ key: null, label: 'Todas', emoji: '✨', color: colors.primary }, ...CATEGORIES]
+                  .filter((c) => c.key === null || questions.some((q) => q.category === c.key))
+                  .map((c) => {
+                    const active = filter === c.key;
+                    const count = c.key ? questions.filter((q) => q.category === c.key).length : questions.length;
+                    return (
+                      <ScalePressable
+                        key={c.key || 'all'}
+                        onPress={() => setFilter(c.key)}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginRight: 8,
+                          paddingHorizontal: 12,
+                          paddingVertical: 7,
+                          borderRadius: 999,
+                          backgroundColor: active ? c.color : soft(c.color),
+                        }}
+                      >
+                        <Text>{c.emoji}</Text>
+                        <Text style={{ marginLeft: 6, fontWeight: '800', color: active ? '#fff' : c.color }}>
+                          {c.label} · {count}
+                        </Text>
+                      </ScalePressable>
+                    );
+                  })}
+              </ScrollView>
+            )}
             {showHint && tab === 'pending' && grouped.pending.length > 0 && (
               <FadeIn delay={300}>
                 <Pressable

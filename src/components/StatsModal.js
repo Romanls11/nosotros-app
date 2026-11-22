@@ -6,6 +6,7 @@ import { colors, fonts, gradients, shadow } from '../theme';
 import { computeStats, humanDuration } from '../stats';
 import { dailyStreak } from '../daily';
 import { FadeIn } from './ui';
+import { CATEGORY_BY_KEY } from '../categories';
 
 /** Barra que crece animada (0..1) */
 function Bar({ value, color, height = 12, delay = 0, vertical = false }) {
@@ -214,6 +215,9 @@ export default function StatsModal({ visible, onClose, questions, couple, uid, p
             <H>✨ Datos curiosos</H>
             <Text style={{ color: colors.text, lineHeight: 24 }}>
               {s.favReaction ? `Su reacción favorita es ${s.favReaction[0]} (${s.favReaction[1]} ${s.favReaction[1] === 1 ? 'vez' : 'veces'}).\n` : ''}
+              {s.favCategory && CATEGORY_BY_KEY[s.favCategory[0]]
+                ? `Su categoría favorita es ${CATEGORY_BY_KEY[s.favCategory[0]].emoji} ${CATEGORY_BY_KEY[s.favCategory[0]].label} (${s.favCategory[1]}).\n`
+                : ''}
               {`Se han escrito ${s.messages} ${s.messages === 1 ? 'mensaje' : 'mensajes'} en los chats.\n`}
               {s.longestMine || s.longestTheirs
                 ? `La respuesta más larga es de ${s.longestMine >= s.longestTheirs ? me : them} (${Math.max(s.longestMine, s.longestTheirs)} caracteres).`

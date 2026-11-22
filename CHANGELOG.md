@@ -2,6 +2,17 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [0.9.0] - 2026-11-22
+
+### Agregado
+- **🏷️ Categorías** con color: Profundas, Divertidas, Futuro, Infancia, Nosotros y Picantes (`src/categories.js` y `src/components/CategoryPill.js`).
+- Selector de categoría al crear una pregunta, con ideas de *Inspírame* según la categoría.
+- Filtro por categoría en la pantalla principal.
+- Categoría favorita en *Nuestro mapa*.
+
+### Cambiado
+- Exportación SQL (app y script): nueva columna `category` en `questions`.
+
 ## [0.8.0] - 2026-11-22
 
 ### Agregado

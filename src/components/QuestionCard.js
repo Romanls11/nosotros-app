@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { colors, fonts, shadow } from '../theme';
 import { FadeIn, ScalePressable } from './ui';
 import SwipeRow from './SwipeRow';
+import CategoryPill from './CategoryPill';
 
 function Chip({ label, ok }) {
   return (
@@ -68,6 +69,11 @@ export default function QuestionCard({ question, uid, partnerId, names, onPress,
           {snoozed && <Text style={{ fontSize: 12, color: colors.violet, fontWeight: '700', marginRight: 6 }}>⏰ Después</Text>}
           {both && <Text style={{ fontSize: 16 }}>💞</Text>}
         </View>
+        {!!question.category && (
+          <View style={{ marginTop: 8 }}>
+            <CategoryPill category={question.category} small />
+          </View>
+        )}
         <Text style={{ fontSize: 18, color: colors.text, fontFamily: fonts.bold, marginTop: 8, lineHeight: 24 }}>
           {question.text}
         </Text>

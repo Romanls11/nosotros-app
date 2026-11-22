@@ -104,12 +104,13 @@ export async function leaveCouple(uid, coupleId) {
 
 // ---------- Preguntas ----------
 
-export function addQuestion(coupleId, uid, text) {
+export function addQuestion(coupleId, uid, text, category = null) {
   return addDoc(collection(db, 'couples', coupleId, 'questions'), {
     text: text.trim(),
     authorId: uid,
     createdAt: serverTimestamp(),
     answers: {},
+    ...(category ? { category } : {}),
   });
 }
 

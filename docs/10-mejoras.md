@@ -9,7 +9,7 @@ Se implementan **una por una**. Cada una se publica con `npm run publicar`, salv
 | 3 | 👆 Deslizar tarjetas para responder o posponer | ✅ Hecha | 0.6.0 |
 | 4 | 😍 Reacciones y mini chat por pregunta | ✅ Hecha | 0.7.0 |
 | 5 | 📊 "Nuestro mapa": estadísticas visuales | ✅ Hecha | 0.8.0 |
-| 6 | 🏷️ Categorías con color (profundas, divertidas, futuro…) | Pendiente | — |
+| 6 | 🏷️ Categorías con color (profundas, divertidas, futuro…) | ✅ Hecha | 0.9.0 |
 | 7 | ⏳ Cápsula del tiempo (preguntas que se abren en una fecha) | Pendiente | — |
 
 ## ⏸️ Pendientes por probar
@@ -62,3 +62,12 @@ Se abre con el botón **📊** del encabezado (cuando ya hay pareja). Todo se ca
 - **Lo que comparten 💛:** palabras que los dos usan en sus respuestas, sin contar palabras comunes ("que", "para"…) ni acentos.
 - **Las palabras de cada quien** y **datos curiosos**: reacción favorita, mensajes del chat y respuesta más larga.
 - Las barras crecen animadas y las tarjetas aparecen escalonadas. No usa librerías de gráficas.
+
+## 6. Categorías
+- **6 categorías** con color e ícono propios (`src/categories.js`): 💭 Profundas · 😂 Divertidas · 🔮 Futuro · 🧸 Infancia · 💞 Nosotros · 🌶️ Picantes.
+- **Al crear una pregunta** se elige la categoría, que es opcional. Con categoría elegida, ✨ *Inspírame* sugiere ideas de esa categoría (6 a 8 por categoría).
+- Se guarda en `questions/{id}.category`. No requiere cambios en las reglas.
+- **Tarjetas y detalle** muestran la etiqueta de color (`CategoryPill`).
+- **Filtro** en la pantalla principal, debajo de la pregunta del día. Aparece en cuanto hay preguntas con categoría, muestra cuántas hay en cada una y se combina con las pestañas.
+- **Nuestro mapa** muestra la categoría favorita, y la **exportación SQL** incluye la columna `category`.
+- Los colores suaves usan transparencia (`soft()`), así que se ven bien en modo claro y oscuro.

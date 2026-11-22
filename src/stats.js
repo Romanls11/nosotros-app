@@ -112,6 +112,11 @@ export function computeStats({ questions = [], couple, uid, partnerId }) {
   const favReaction = Object.entries(reactionCount).sort((a, b) => b[1] - a[1])[0] || null;
   const messages = questions.reduce((s, q) => s + (q.commentCount || 0), 0);
 
+  // Categoría favorita
+  const catCount = {};
+  questions.forEach((q) => q.category && (catCount[q.category] = (catCount[q.category] || 0) + 1));
+  const favCategory = Object.entries(catCount).sort((a, b) => b[1] - a[1])[0] || null;
+
   // Días juntos en la app
   const since = couple?.createdAt?.toDate ? couple.createdAt.toDate() : null;
   const daysTogether = since ? Math.max(1, Math.floor((Date.now() - since.getTime()) / 86400000) + 1) : null;
@@ -132,6 +137,7 @@ export function computeStats({ questions = [], couple, uid, partnerId }) {
     shared,
     favReaction,
     messages,
+    favCategory,
     daysTogether,
     since,
     best: bestStreak(questions, uid, partnerId),

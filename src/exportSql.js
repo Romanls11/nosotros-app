@@ -25,7 +25,7 @@ export function buildSql(coupleId, couple, questions) {
   const qRows = [];
   const aRows = [];
   for (const q of questions || []) {
-    qRows.push([str(q.id), str(q.authorId), str(q.text), ts(q.createdAt)]);
+    qRows.push([str(q.id), str(q.authorId), str(q.category || null), str(q.text), ts(q.createdAt)]);
     for (const [uid, a] of Object.entries(q.answers || {})) {
       aRows.push([str(q.id), str(uid), str(a?.text), ts(a?.answeredAt)]);
     }
@@ -46,6 +46,7 @@ CREATE TABLE \`users\` (
 CREATE TABLE \`questions\` (
   \`id\`         VARCHAR(64) PRIMARY KEY,
   \`author_id\`  VARCHAR(128),
+  \`category\`   VARCHAR(32),
   \`text\`       TEXT NOT NULL,
   \`created_at\` TIMESTAMP NULL
 );
@@ -60,6 +61,6 @@ CREATE TABLE \`answers\` (
 );
 
 ${insert('users', ['id', 'name'], users)}
-${insert('questions', ['id', 'author_id', 'text', 'created_at'], qRows)}
+${insert('questions', ['id', 'author_id', 'category', 'text', 'created_at'], qRows)}
 ${insert('answers', ['question_id', 'user_id', 'text', 'answered_at'], aRows)}`;
 }

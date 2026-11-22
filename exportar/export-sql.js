@@ -76,6 +76,7 @@ CREATE TABLE ${q('questions')} (
   ${q('id')}         VARCHAR(64) PRIMARY KEY,
   ${q('couple_id')}  VARCHAR(64) NOT NULL,
   ${q('author_id')}  VARCHAR(128),
+  ${q('category')}   VARCHAR(32),
   ${q('text')}       TEXT NOT NULL,
   ${q('created_at')} TIMESTAMP NULL,
   FOREIGN KEY (${q('couple_id')}) REFERENCES ${q('couples')}(${q('id')})
@@ -105,7 +106,7 @@ CREATE TABLE ${q('answers')} (
     const qs = await c.ref.collection('questions').get();
     for (const qd of qs.docs) {
       const x = qd.data();
-      questions.push([str(qd.id), str(c.id), str(x.authorId), str(x.text), ts(x.createdAt)]);
+      questions.push([str(qd.id), str(c.id), str(x.authorId), str(x.category || null), str(x.text), ts(x.createdAt)]);
       for (const [uid, a] of Object.entries(x.answers || {})) {
         answers.push([str(qd.id), str(uid), str(a?.text), ts(a?.answeredAt)]);
       }
@@ -125,7 +126,7 @@ CREATE TABLE ${q('answers')} (
     schema + '\n' +
     insert('couples', ['id', 'invite_code', 'created_at'], couples) + '\n' +
     insert('users', ['id', 'name', 'couple_id'], users) + '\n' +
-    insert('questions', ['id', 'couple_id', 'author_id', 'text', 'created_at'], questions) + '\n' +
+    insert('questions', ['id', 'couple_id', 'author_id', 'category', 'text', 'created_at'], questions) + '\n' +
     insert('answers', ['question_id', 'user_id', 'text', 'answered_at'], answers);
 
   const stamp = new Date().toISOString().slice(0, 10);

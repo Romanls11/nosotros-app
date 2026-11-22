@@ -5,6 +5,7 @@ import {
   Modal,
   Platform,
   Pressable,
+  ScrollView,
   Text,
   TextInput,
   View,
@@ -13,23 +14,26 @@ import { colors, ui } from '../theme';
 import { addQuestion, friendlyError } from '../services';
 import { randomSuggestion } from '../suggestions';
 import { GradientButton, ScalePressable, tap } from './ui';
+import { CATEGORIES, randomIdea, soft } from '../categories';
 
 export default function NewQuestionModal({ visible, onClose, coupleId, uid, onCreated }) {
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [category, setCategory] = useState(null);
   const spin = useRef(new Animated.Value(0)).current;
 
   function close() {
     setText('');
     setError('');
+    setCategory(null);
     onClose();
   }
 
   function inspire() {
     spin.setValue(0);
     Animated.timing(spin, { toValue: 1, duration: 500, useNativeDriver: true }).start();
-    setText(randomSuggestion(text));
+    setText((category && randomIdea(category, text)) || randomSuggestion(text));
   }
 
   async function save() {
@@ -39,7 +43,7 @@ export default function NewQuestionModal({ visible, onClose, coupleId, uid, onCr
     }
     setSaving(true);
     try {
-      await addQuestion(coupleId, uid, text);
+      await addQuestion(coupleId, uid, text, category);
       tap('success');
       onCreated?.(text);
       close();
@@ -63,6 +67,31 @@ export default function NewQuestionModal({ visible, onClose, coupleId, uid, onCr
           <View style={{ alignSelf: 'center', width: 44, height: 5, borderRadius: 3, backgroundColor: colors.border, marginBottom: 16 }} />
           <Text style={[ui.title, { fontSize: 22 }]}>💌 Nueva pregunta</Text>
           <Text style={ui.subtitle}>Tu pareja la verá y podrá responderla cuando quiera.</Text>
+
+          {/* Categoría (opcional) */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 14, marginHorizontal: -24 }} contentContainerStyle={{ paddingHorizontal: 24 }} keyboardShouldPersistTaps="handled">
+            {CATEGORIES.map((c) => {
+              const active = category === c.key;
+              return (
+                <ScalePressable
+                  key={c.key}
+                  onPress={() => setCategory(active ? null : c.key)}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginRight: 8,
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 999,
+                    backgroundColor: active ? c.color : soft(c.color),
+                  }}
+                >
+                  <Text>{c.emoji}</Text>
+                  <Text style={{ marginLeft: 6, fontWeight: '800', color: active ? '#fff' : c.color }}>{c.label}</Text>
+                </ScalePressable>
+              );
+            })}
+          </ScrollView>
 
           <TextInput
             style={[ui.input, { minHeight: 110, textAlignVertical: 'top' }]}

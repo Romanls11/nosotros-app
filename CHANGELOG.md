@@ -2,6 +2,13 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [1.1.0] - 2026-11-22
+
+### Agregado
+- **👨‍💻 Acerca de** (en Ajustes → Información): logo, versión, datos del desarrollador con enlaces, tecnologías, créditos y licencia (`src/components/AboutModal.js`).
+- Los datos se editan en un solo archivo: `src/about.js`.
+- 🥚 Sorpresa escondida: tocar el logo 5 veces.
+
 ## [1.0.0] - 2026-11-22 🎉
 
 Se completan las 7 mejoras del plan (`docs/10-mejoras.md`).

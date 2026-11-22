@@ -103,6 +103,11 @@ pero no dan acceso. Toda app web o móvil con Firebase los incluye. La protecci�
 
 Lo que **nunca** se sube es `exportar/serviceAccount.json` (clave de administrador); está en `.gitignore`.
 
+## 👨‍💻 Autor
+
+**Román Luna Soto**, desarrollador de software e instructor de informática.
+GitHub: [@Romanls11](https://github.com/Romanls11)
+
 ## 📄 Licencia
 
 [MIT](LICENSE) © 2026 Román Luna Soto

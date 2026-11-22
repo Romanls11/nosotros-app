@@ -4,6 +4,8 @@ import { colors, shadow, ui } from '../theme';
 import { friendlyError, leaveCouple, logout, resetPassword } from '../services';
 import { FadeIn, ScalePressable, tap } from './ui';
 import { useTheme } from '../themeContext';
+import AboutModal from './AboutModal';
+import { ABOUT } from '../about';
 
 function Row({ icon, title, subtitle, onPress, danger, right }) {
   return (
@@ -82,6 +84,7 @@ export default function SettingsModal({
   onExport,
 }) {
   const [leaving, setLeaving] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const names = couple?.names || {};
   const myName = names[user.uid] || user.displayName || 'Tú';
   const partnerName = partnerId ? names[partnerId] : null;
@@ -191,7 +194,12 @@ export default function SettingsModal({
             />
           </Section>
 
-          <Text style={{ textAlign: 'center', color: colors.muted, marginTop: 28, fontSize: 12 }}>nosotros · v1.0.0</Text>
+          <Section title="Información" delay={300}>
+            <Row icon="👨‍💻" title="Acerca de" subtitle={`nosotros v${ABOUT.version} · por ${ABOUT.developer.name}`} onPress={() => setShowAbout(true)} />
+          </Section>
+
+          <Text style={{ textAlign: 'center', color: colors.muted, marginTop: 28, fontSize: 12 }}>nosotros · v{ABOUT.version}</Text>
+          <AboutModal visible={showAbout} onClose={() => setShowAbout(false)} />
         </ScrollView>
       </View>
     </Modal>

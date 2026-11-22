@@ -118,6 +118,20 @@ export function saveAnswer(coupleId, questionId, uid, text) {
   });
 }
 
+/** Crea (si no existe) la pregunta del día con id fijo, para que los dos respondan la misma */
+export async function ensureDailyQuestion(coupleId, uid, dateKey, text) {
+  const ref = doc(db, 'couples', coupleId, 'questions', `daily-${dateKey}`);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    try {
+      await setDoc(ref, { text, authorId: uid, createdAt: serverTimestamp(), answers: {}, daily: dateKey });
+    } catch {
+      // Tu pareja la creó al mismo tiempo: no pasa nada, ya existe
+    }
+  }
+  return ref.id;
+}
+
 export function deleteQuestion(coupleId, questionId) {
   return deleteDoc(doc(db, 'couples', coupleId, 'questions', questionId));
 }

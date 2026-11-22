@@ -2,6 +2,15 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [0.4.0] - 2026-11-21
+
+### Agregado
+- **☀️ Pregunta del día** con **racha 🔥** de días seguidos respondiendo juntos (`src/daily.js` y `src/components/DailyCard.js`). Ver `docs/10-mejoras.md`.
+- `ensureDailyQuestion()` en `services.js`.
+
+### Corregido
+- **El botón + no respondía en Android:** el `position: absolute` estaba dentro del `Pressable`, y Android ignora los toques fuera de los límites del padre. Ahora el contenedor absoluto envuelve al botón.
+
 ## [0.3.0] - 2026-11-17
 
 ### Agregado

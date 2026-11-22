@@ -55,7 +55,7 @@ export default function QuestionCard({ question, uid, partnerId, names, onPress,
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={{ fontSize: 12, color: colors.muted, fontWeight: '600', flex: 1 }}>
-            {fromMe ? '💬 Tú preguntaste' : `💌 ${names[question.authorId] || 'Tu pareja'} preguntó`} · {formatDate(question.createdAt)}
+            {question.daily ? '☀️ Pregunta del día' : fromMe ? '💬 Tú preguntaste' : `💌 ${names[question.authorId] || 'Tu pareja'} preguntó`} · {formatDate(question.createdAt)}
           </Text>
           {both && <Text style={{ fontSize: 16 }}>💞</Text>}
         </View>

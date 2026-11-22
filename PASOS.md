@@ -1,83 +1,108 @@
-# Nosotros 💞: pasos y notas
+# Nosotros 💞: guía rápida
 
-## Datos del proyecto
-- **Carpeta:** `C:\Users\roman\Desktop\Claude Code Test\app-pareja`
-- **Firebase:** proyecto `pareja-app-c855e` (plan Spark, gratis)
-- **Servicios activos:** Authentication (correo y contraseña) y Firestore `(default)` en `us-central1`
-- **Tecnología:** Expo SDK 58 (React Native) + Firebase JS SDK 13
+Carpeta de trabajo: `C:\Users\roman\Desktop\Claude Code Test\app-pareja` (aquí editas)
+Carpeta de compilación: `C:\dev\nosotros` (aquí se genera el APK)
 
 ---
 
-## 1. Configuración en Firebase (ya hecha ✅)
-1. Crear el proyecto en console.firebase.google.com.
-2. **Firestore → Crear base de datos**: ID `(default)`, ubicación `us-central1`, modo producción.
-3. **Firestore → Reglas**: pegar el contenido de `firestore.rules` y **Publicar**.
-4. **Authentication → Método de acceso**: activar **Correo electrónico/contraseña**.
-5. **Agregar app → Web `</>`**: copiar `firebaseConfig` a `firebaseConfig.js`.
-   Se registra como **Web**, no como Android, porque Expo usa el SDK de JavaScript.
-
-## 2. Correr la app en modo desarrollo
-```bash
+## 1. Probar cambios rápido (Expo Go)
+```powershell
 cd "C:\Users\roman\Desktop\Claude Code Test\app-pareja"
-npm install          # solo la primera vez
-npx expo start       # muestra el QR
+npx expo start --go
 ```
-- En el teléfono: instalar **Expo Go** y escanear el QR **desde Expo Go**, no con la cámara.
-- El teléfono y la compu deben estar en el mismo Wi-Fi.
-- Si no conecta: `npx expo start --tunnel`.
-- Si un cambio no se refleja: `npx expo start -c` (borra la caché).
+Escanea el QR **desde Expo Go**. En Expo Go no hay notificaciones push.
 
-## 3. Usar la app
-1. Cada quien crea su cuenta.
-2. Uno toca **Crear pareja** y comparte el código de 6 letras.
-3. El otro toca **Unirme** y escribe el código.
-4. Hacer preguntas con **+** (el botón ✨ *Inspírame* sugiere ideas).
-5. Responder cuando quieran. La respuesta del otro se ve hasta que tú respondes.
-
-## 4. Exportar a SQL
-
-### Opción fácil: desde la app
-Toca **Exportar**, arriba a la derecha, y mándate el SQL por WhatsApp, Gmail o Drive.
-Crea las tablas `users`, `questions` y `answers` (MySQL). No necesita claves ni terminal.
-
-### Opción completa: script en la compu (todas las parejas, MySQL o PostgreSQL)
-1. Firebase → ⚙️ Configuración del proyecto → **Cuentas de servicio** → **Generar nueva clave privada**.
-2. Renombrar el archivo a `serviceAccount.json` y guardarlo en la carpeta `exportar\`.
-   ⚠️ Es secreta: no compartirla ni subirla a GitHub (ya está en `.gitignore`).
-3. Ejecutar:
-```bash
-cd exportar
-npm install                  # solo la primera vez
-node export-sql.js           # MySQL
-node export-sql.js postgres  # PostgreSQL
+## 2. Guardar cambios en GitHub
+```powershell
+cd "C:\Users\roman\Desktop\Claude Code Test\app-pareja"
+git add .
+git commit -m "Qué cambié"
+git push
 ```
 
-Importar el archivo: `mysql -u root -p nombre_bd < archivo.sql`, o abrirlo en phpMyAdmin o DBeaver.
-
-## 5. Siguiente paso: generar el APK
-Para que la app quede instalada sin depender de la compu:
-```bash
-npm install -g eas-cli
-eas login
-eas build:configure
-eas build -p android --profile preview
+## 3. Mandar cambios a los teléfonos SIN compilar
+Para cambios de pantallas, colores, textos o lógica:
+```powershell
+cd "C:\Users\roman\Desktop\Claude Code Test\app-pareja"
+npm run publicar -- --message "Qué cambié"
 ```
-En `eas.json`, dentro de `preview`, agregar `"android": { "buildType": "apk" }`.
+En los teléfonos: cierren y abran la app **dos veces**.
+
+## 4. Compilar el APK
+Solo cuando se agrega algo nativo (librerías `expo-*` nuevas, permisos, ícono o nombre).
+```powershell
+# 1) Subir cambios (paso 2) y traerlos a la carpeta de compilación
+cd C:\dev\nosotros
+git reset --hard   # descarta cambios locales (esta carpeta solo es para compilar)
+git pull
+npm install
+
+# 2) Generar y compilar
+npx expo prebuild --platform android --clean
+cd android
+.\gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
+```
+APK listo en: `C:\dev\nosotros\android\app\build\outputs\apk\release\app-release.apk`
+Mándalo por WhatsApp o Drive y se instala **encima**.
+
+## 5. Cambiar las reglas de Firebase
+Cuando cambie `firestore.rules`: cópialo completo → **Firebase → Firestore → Reglas → Publicar**.
+
+## 6. Olvidé mi contraseña
+- **En la app:** Entrar → escribe tu correo → **¿Olvidaste tu contraseña?**
+- **Desde la PC:**
+```powershell
+cd "C:\Users\roman\Desktop\Claude Code Test\app-pareja\exportar"
+node cambiar-password.js --lista                       # ver correos
+node cambiar-password.js correo@ejemplo.com Nueva123   # poner contraseña nueva
+```
+
+## 7. Exportar a SQL
+- **En la app:** ⚙️ Ajustes → Exportar a SQL.
+- **Desde la PC:**
+```powershell
+cd "C:\Users\roman\Desktop\Claude Code Test\app-pareja\exportar"
+node export-sql.js            # MySQL
+node export-sql.js postgres   # PostgreSQL
+```
 
 ---
 
-## Errores que ya resolvimos
-| Error | Causa | Solución |
-|---|---|---|
-| Se abre texto JSON en Chrome | Se escaneó el QR con la cámara | Escanear desde Expo Go |
-| `Failed to download remote update` | Primera compilación lenta o firewall | Recargar ⟳, permitir Node en el firewall o usar `--tunnel` |
-| `auth/api-key-not-valid` | `firebaseConfig.js` con `PEGA_AQUI` | Poner los datos reales de Firebase |
-| `permission-denied` al crear la pareja | La app leía antes de que el servidor guardara | Ya corregido en el código (espera la confirmación y reintenta) |
+## Configuración inicial (ya hecha, solo en una PC nueva)
+1. Instalar **Node LTS**, **Git** y **Android Studio** (asistente *Standard*).
+2. Variables de entorno:
+```powershell
+[Environment]::SetEnvironmentVariable("ANDROID_HOME", "$env:LOCALAPPDATA\Android\Sdk", "User")
+[Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\Program Files\Android\Android Studio\jbr", "User")
+```
+3. Rutas largas: PowerShell **como administrador**, y después reiniciar:
+```powershell
+New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+```
+4. Ninja 1.12.1 (después de compilar una vez, para que exista la carpeta `cmake`):
+```powershell
+$ninja = "$env:LOCALAPPDATA\Android\Sdk\cmake\3.22.1\bin\ninja.exe"
+Invoke-WebRequest https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip -OutFile "$env:TEMP\ninja.zip"
+Expand-Archive "$env:TEMP\ninja.zip" -DestinationPath "$env:TEMP\ninja" -Force
+Copy-Item "$env:TEMP\ninja\ninja.exe" $ninja -Force
+```
+5. Clonar la carpeta de compilación:
+```powershell
+git config --global core.longpaths true
+mkdir C:\dev; cd C:\dev
+git clone https://github.com/Romanls11/nosotros-app.git nosotros
+```
+6. Expo (para publicar actualizaciones): `npm install -g eas-cli` y luego `eas login`.
+7. `exportar\serviceAccount.json`: Firebase → ⚙️ Configuración → Cuentas de servicio → Generar clave. ⚠️ Es secreta.
 
-## Modelo de datos (Firestore)
-```
-users/{uid}                         name, coupleId
-invites/{CODIGO}                    coupleId, createdBy
-couples/{coupleId}                  members[], names{}, inviteCode
-couples/{coupleId}/questions/{id}   text, authorId, createdAt, answers{ uid: {text, answeredAt} }
-```
+## Si algo falla
+| Error | Qué hacer |
+|---|---|
+| `SDK location not found` | `$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"` |
+| `ninja: error: mkdir` | Pasos 3 y 4 de la configuración inicial, luego borrar `android\app\.cxx` |
+| "No se instaló la app" | Desinstala la versión anterior (firma distinta) y vuelve a instalar |
+| `permission-denied` | Publicar las reglas (paso 5) |
+| Un cambio no se ve en Expo Go | `npx expo start --go -c` |
+| El APK sale igual que antes | En `C:\dev\nosotros`: `git reset --hard` y `git pull` antes de compilar |
+
+Guía detallada: carpeta `docs/`.

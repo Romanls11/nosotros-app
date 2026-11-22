@@ -168,7 +168,7 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
             </Pressable>
             <FadeIn>
               <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 20, fontWeight: '600' }}>
-                {question.authorId === uid ? 'Tú preguntaste' : `${names[question.authorId] || 'Tu pareja'} preguntó`} ·{' '}
+                {question.daily ? '☀️ Pregunta del día' : question.authorId === uid ? 'Tú preguntaste' : `${names[question.authorId] || 'Tu pareja'} preguntó`} ·{' '}
                 {formatDate(question.createdAt)}
               </Text>
               <Text style={{ fontSize: 26, fontFamily: fonts.display, color: '#fff', marginTop: 8, lineHeight: 32 }}>
@@ -235,7 +235,7 @@ export default function QuestionModal({ question, onClose, coupleId, uid, partne
               </FadeIn>
             )}
 
-            {question.authorId === uid && (
+            {question.authorId === uid && !question.daily && (
               <Pressable onPress={confirmDelete}>
                 <Text style={[ui.link, { color: colors.danger, marginTop: 32 }]}>Borrar pregunta</Text>
               </Pressable>

@@ -36,6 +36,7 @@ npm install
 Para las siguientes veces, solo actualiza:
 ```powershell
 cd C:\dev\nosotros
+git reset --hard   # esta carpeta solo es para compilar; no edites aquí
 git pull
 npm install
 ```

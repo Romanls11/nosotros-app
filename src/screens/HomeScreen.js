@@ -11,6 +11,9 @@ import QuestionCard from '../components/QuestionCard';
 import NewQuestionModal from '../components/NewQuestionModal';
 import QuestionModal from '../components/QuestionModal';
 import SettingsModal from '../components/SettingsModal';
+import DailyCard from '../components/DailyCard';
+import { dailyQuestionFor, dailyStreak, todayKey } from '../daily';
+import { ensureDailyQuestion } from '../services';
 import { FadeIn, GradientHeader, ScalePressable, tap } from '../components/ui';
 
 const TABS = [
@@ -111,6 +114,16 @@ export default function HomeScreen({ user, coupleId }) {
     Animated.spring(indicator, { toValue: tabIndex, useNativeDriver: true, speed: 18, bounciness: 8 }).start();
   }, [tabIndex]);
   const tabW = tabsWidth / TABS.length;
+
+  // ---------- Pregunta del día ----------
+  const dayKey = todayKey();
+  const dailyText = dailyQuestionFor(coupleId, dayKey);
+  const dailyDoc = questions?.find((q) => q.id === `daily-${dayKey}`);
+  const streak = useMemo(() => dailyStreak(questions, user.uid, partnerId), [questions, user.uid, partnerId]);
+  async function openDaily() {
+    const id = await ensureDailyQuestion(coupleId, user.uid, dayKey, dailyText);
+    setOpenId(id);
+  }
 
   const openQuestion = questions?.find((q) => q.id === openId) || null;
 
@@ -249,6 +262,18 @@ export default function HomeScreen({ user, coupleId }) {
         data={grouped[tab]}
         keyExtractor={(q) => q.id}
         contentContainerStyle={{ padding: 20, paddingBottom: 130 }}
+        ListHeaderComponent={
+          partnerId ? (
+            <DailyCard
+              text={dailyDoc?.text || dailyText}
+              mine={!!dailyDoc?.answers?.[user.uid]}
+              theirs={!!dailyDoc?.answers?.[partnerId]}
+              partnerName={partnerName}
+              streak={streak}
+              onPress={openDaily}
+            />
+          ) : null
+        }
         renderItem={({ item, index }) => (
           <QuestionCard
             question={item}
@@ -269,12 +294,13 @@ export default function HomeScreen({ user, coupleId }) {
         }
       />
 
-      {/* Botón flotante */}
+      {/* Botón flotante (el contenedor absoluto va por fuera para que Android reciba el toque) */}
+      <View style={{ position: 'absolute', right: 24, bottom: 34 }}>
       <ScalePressable
         onPress={() => setShowNew(true)}
         haptic="medium"
         scaleTo={0.9}
-        style={[{ position: 'absolute', right: 24, bottom: 34, borderRadius: 34 }, shadow, { elevation: 8 }]}
+        style={[{ borderRadius: 34 }, shadow, { elevation: 8 }]}
       >
         <LinearGradient
           colors={gradients.primary}
@@ -285,6 +311,7 @@ export default function HomeScreen({ user, coupleId }) {
           <Text style={{ color: '#fff', fontSize: 34, marginTop: -3, fontWeight: '300' }}>+</Text>
         </LinearGradient>
       </ScalePressable>
+      </View>
 
       <NewQuestionModal
         visible={showNew}

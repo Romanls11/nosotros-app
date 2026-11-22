@@ -57,7 +57,7 @@ export function acceptPrivacy(uid) {
  * respuestas, reacciones, mensajes, vínculo con la pareja, perfil y cuenta.
  * Las preguntas que escribió se conservan sin su nombre (para no borrar respuestas de la pareja).
  */
-export async function deleteMyAccount({ user, password, coupleId, questions = [], games = [], onStep = () => {} }) {
+export async function deleteMyAccount({ user, password, coupleId, questions = [], games = [], tests = {}, onStep = () => {} }) {
   // 0) Confirmar identidad (Firebase lo exige para borrar la cuenta)
   onStep('Verificando…');
   await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
@@ -71,6 +71,11 @@ export async function deleteMyAccount({ user, password, coupleId, questions = []
       if (q.commentCount) {
         const snap = await getDocs(collection(ref, 'comments'));
         for (const c of snap.docs) if (c.data().authorId === user.uid) await deleteDoc(c.ref);
+      }
+    }
+    for (const [key, t] of Object.entries(tests)) {
+      if (t.answers?.[user.uid]) {
+        await updateDoc(doc(db, 'couples', coupleId, 'tests', key), { [`answers.${user.uid}`]: deleteField() });
       }
     }
     for (const g of games) {
@@ -228,6 +233,11 @@ export function createRound(coupleId, uid, prompt) {
 /** Votar por quién es más probable (choiceUid = uid de uno de los dos) */
 export function voteRound(coupleId, gameId, uid, choiceUid) {
   return updateDoc(doc(db, 'couples', coupleId, 'games', gameId), { [`votes.${uid}`]: choiceUid });
+}
+
+/** Guarda tus respuestas de un test de compatibilidad (se sobreescriben si repites) */
+export function saveTestAnswers(coupleId, packKey, uid, answers) {
+  return setDoc(doc(db, 'couples', coupleId, 'tests', packKey), { answers: { [uid]: answers } }, { merge: true });
 }
 
 export function deleteRound(coupleId, gameId) {

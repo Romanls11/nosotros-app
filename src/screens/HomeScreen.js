@@ -16,6 +16,8 @@ import StatsModal from '../components/StatsModal';
 import MemoryCard from '../components/MemoryCard';
 import WhoMoreCard from '../components/WhoMoreCard';
 import WhoMoreModal from '../components/WhoMoreModal';
+import CompatCard from '../components/CompatCard';
+import CompatModal from '../components/CompatModal';
 import { findMemory } from '../memories';
 import { CATEGORIES, soft } from '../categories';
 import { isLocked, scheduleCapsuleReminders } from '../capsule';
@@ -41,6 +43,8 @@ export default function HomeScreen({ user, coupleId }) {
   const [showStats, setShowStats] = useState(false);
   const [showGame, setShowGame] = useState(false);
   const [games, setGames] = useState([]);
+  const [tests, setTests] = useState({});
+  const [showCompat, setShowCompat] = useState(false);
   const [filter, setFilter] = useState(null); // categoría seleccionada
   const [openId, setOpenId] = useState(null);
 
@@ -76,6 +80,17 @@ export default function HomeScreen({ user, coupleId }) {
       () => setGames([])
     );
   }, [coupleId, retry]);
+
+  // 💯 Tests de compatibilidad (un documento por test)
+  useEffect(
+    () =>
+      onSnapshot(
+        collection(db, 'couples', coupleId, 'tests'),
+        (snap) => setTests(Object.fromEntries(snap.docs.map((d) => [d.id, d.data()]))),
+        () => setTests({})
+      ),
+    [coupleId, retry]
+  );
 
   const partnerId = couple?.members?.find((m) => m !== user.uid) || null;
   const names = couple?.names || {};
@@ -133,6 +148,11 @@ export default function HomeScreen({ user, coupleId }) {
   function notifyVote(game, partnerAlreadyVoted) {
     if (partnerAlreadyVoted) sendPush(partnerToken, '🎲 ¡Resultado listo!', `¿Coincidieron? …${game.prompt}`);
     else sendPush(partnerToken, `🎲 ${myName} ya votó`, `Te toca: ¿quién es más probable que ${game.prompt}?`);
+  }
+
+  function notifyTest(pack, pct) {
+    if (pct == null) sendPush(partnerToken, `💯 ${myName} terminó el test "${pack.title}"`, '¡Te toca! Responde y descubran qué tanto coinciden.');
+    else sendPush(partnerToken, `💯 ¡Resultado listo: ${pct}% compatibles!`, `Test "${pack.title}". Entra a ver en qué coincidieron.`);
   }
 
   function exportSql() {
@@ -374,6 +394,7 @@ export default function HomeScreen({ user, coupleId }) {
               partnerName={partnerName}
               onPress={() => setShowGame(true)}
             />
+            <CompatCard tests={tests} uid={user.uid} partnerId={partnerId} partnerName={partnerName} onPress={() => setShowCompat(true)} />
             <MemoryCard
               memory={memory}
               uid={user.uid}
@@ -518,6 +539,17 @@ export default function HomeScreen({ user, coupleId }) {
         onVoted={notifyVote}
       />
 
+      <CompatModal
+        visible={showCompat}
+        onClose={() => setShowCompat(false)}
+        coupleId={coupleId}
+        uid={user.uid}
+        partnerId={partnerId}
+        names={names}
+        tests={tests}
+        onCompleted={notifyTest}
+      />
+
       <StatsModal
         visible={showStats}
         onClose={() => setShowStats(false)}
@@ -539,6 +571,7 @@ export default function HomeScreen({ user, coupleId }) {
         onExport={exportSql}
         questions={questions}
         games={games}
+        tests={tests}
       />
     </View>
   );

@@ -5,7 +5,7 @@ import { colors, fonts, shadow, ui } from '../theme';
 import { deleteMyAccount, friendlyError } from '../services';
 import { PasswordInput, ScalePressable, tap } from './ui';
 
-export default function DeleteAccountModal({ visible, onClose, user, coupleId, questions, games }) {
+export default function DeleteAccountModal({ visible, onClose, user, coupleId, questions, games, tests }) {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
@@ -20,7 +20,7 @@ export default function DeleteAccountModal({ visible, onClose, user, coupleId, q
     setBusy(true);
     setError('');
     try {
-      await deleteMyAccount({ user, password, coupleId, questions, games, onStep: setStep });
+      await deleteMyAccount({ user, password, coupleId, questions, games, tests, onStep: setStep });
       tap('success');
       // Al borrarse la cuenta, la app regresa sola a la pantalla de inicio de sesión.
     } catch (e) {

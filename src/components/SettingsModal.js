@@ -87,6 +87,7 @@ export default function SettingsModal({
   onExport,
   questions,
   games,
+  tests,
 }) {
   const [leaving, setLeaving] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -232,6 +233,7 @@ export default function SettingsModal({
             coupleId={coupleId}
             questions={questions}
             games={games}
+            tests={tests}
           />
         </ScrollView>
       </View>

@@ -2,6 +2,18 @@
 
 Bitácora de cambios del proyecto. Formato: fecha, qué cambió y por qué.
 
+## [1.5.0] - 2026-11-22
+
+### Agregado
+- **💯 Test de compatibilidad** (`src/compat.js`, `CompatCard` y `CompatModal`):
+  - 3 tests de 10 preguntas: 💞 Amor y pareja, 🏡 Estilo de vida y 🎉 Diversión.
+  - Una pregunta por pantalla, con barra de progreso, deslizamiento entre preguntas y avance automático.
+  - Respuestas ocultas hasta que terminen los dos.
+  - Resultado con porcentaje que cuenta hacia arriba, nivel (Almas gemelas, Muy compatibles, Se complementan o Polos opuestos) y detalle de cada pregunta con las dos respuestas.
+  - Se puede repetir la propia parte. Hay notificaciones de "te toca" y "resultado listo".
+- Reglas para `couples/{id}/tests/{packKey}`.
+- Eliminar cuenta también borra tus respuestas de los tests.
+
 ## [1.4.1] - 2026-11-22
 
 ### Agregado

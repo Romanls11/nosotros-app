@@ -21,6 +21,7 @@ Hecha con **Expo (React Native)** y **Firebase** en su plan gratuito: sin servid
 - ☀️ **Pregunta del día** con racha 🔥 de días seguidos.
 - 😍 **Reacciones** y 💬 **mini chat** en cada pregunta.
 - 🎲 **¿Quién es más probable que…?**: voten en secreto y descubran si coinciden.
+- 💯 **Test de compatibilidad**: 3 tests para saber qué tanto coinciden.
 - 🏷️ **Categorías** con color y filtro.
 - ⏳ **Cápsula del tiempo**: respuestas que se abren en una fecha especial.
 - 📊 **Nuestro mapa**: estadísticas de la pareja.
